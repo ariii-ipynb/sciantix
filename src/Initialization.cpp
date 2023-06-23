@@ -63,7 +63,6 @@ void Initialization()
 	Sciantix_variables[76] = 0; // Chromium precipitate
 	Sciantix_variables[77] = 0; // Chromia precipitate
 	Sciantix_variables[78] = 0; // Chromia precipitate
-	Sciantix_variables[79] = 0; // Diffusivity
 
 	// projection on diffusion modes of the initial conditions
 	double initial_condition(0.0);

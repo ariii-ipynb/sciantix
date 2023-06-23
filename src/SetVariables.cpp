@@ -947,7 +947,7 @@ void SetVariables(int Sciantix_options[], double Sciantix_history[], double Scia
 	sciantix_variable[sv_counter].setUOM("(m)");
 	sciantix_variable[sv_counter].setInitialValue(Sciantix_variables[71]);
 	sciantix_variable[sv_counter].setFinalValue(Sciantix_variables[71]);
-	sciantix_variable[sv_counter].setOutput(1);
+	sciantix_variable[sv_counter].setOutput(0);
 	++sv_counter;
 
 	sciantix_variable.emplace_back();
@@ -955,7 +955,7 @@ void SetVariables(int Sciantix_options[], double Sciantix_history[], double Scia
 	sciantix_variable[sv_counter].setUOM("(kg/m3)");
 	sciantix_variable[sv_counter].setInitialValue(Sciantix_variables[72]);
 	sciantix_variable[sv_counter].setFinalValue(Sciantix_variables[72]);
-	sciantix_variable[sv_counter].setOutput(1);
+	sciantix_variable[sv_counter].setOutput(0);
 	++sv_counter;
 
 	sciantix_variable.emplace_back();
