@@ -54,6 +54,17 @@ void Initialization()
 	// Intragranular similarity ratio
 	Sciantix_variables[64] = 1.0;
 
+	// Parameters for UO2Cr matrix
+	Sciantix_variables[71] = 0; // lattice parameter
+	Sciantix_variables[72] = 0; // theoretical density 
+	Sciantix_variables[73] = 0; // Chromium solubility
+	Sciantix_variables[74] = 0; // Cr2O3 solubility
+	Sciantix_variables[75] = 0; // Chromium solution
+	Sciantix_variables[76] = 0; // Chromium precipitate
+	Sciantix_variables[77] = 0; // Chromia precipitate
+	Sciantix_variables[78] = 0; // Chromia precipitate
+	Sciantix_variables[79] = 0; // Diffusivity
+
 	// projection on diffusion modes of the initial conditions
 	double initial_condition(0.0);
 	double projection_remainder(0.0);

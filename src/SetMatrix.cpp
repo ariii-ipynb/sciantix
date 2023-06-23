@@ -40,6 +40,14 @@ void SetMatrix( )
 
 			break;
 		}
+
+		case 2:
+		{
+		   	UO2Cr();
+			MapMatrix();       
+			
+			break;
+		}
 		
 		default:
 			break;
@@ -95,6 +103,8 @@ void Matrix::setGrainBoundaryMobility(int input_value)
 }
 
 void Matrix::setGrainBoundaryVacancyDiffusivity(int input_value)
+
+
 {
 	/** 
 	 * ### GrainBoundaryVacancyDiffusivity
@@ -148,5 +158,20 @@ void Matrix::setGrainBoundaryVacancyDiffusivity(int input_value)
 	default:
 		ErrorMessages::Switch("SetMatrix.cpp", "iGrainBoundaryVacancyDiffusivity", input_value);
 		break;
+	}
+}
+
+void Matrix::setLatticeParameter(double lp)
+{
+	{
+		lattice_parameter = lp; // (m)
+	}
+}
+
+void Matrix::setTheoreticalDensity(double td)
+
+{
+	{
+		theoretical_density = td; // (kg/m3)
 	}
 }

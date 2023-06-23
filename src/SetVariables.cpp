@@ -173,6 +173,9 @@ void SetVariables(int Sciantix_options[], double Sciantix_history[], double Scia
 	bool toOutputStoichiometryDeviation(0);
 	if (input_variable[iv["iStoichiometryDeviation"]].getValue() > 0) toOutputStoichiometryDeviation = 1;
 
+	bool toOutputChromiumContent(0);
+	if (input_variable[iv["iFuelMatrix"]].getValue() == 2) toOutputChromiumContent = 1;
+
 	// ----------------------------------------------------------------------------
 	// Physics variable
 	// ----------------------------------------------------------------------------
@@ -929,6 +932,78 @@ void SetVariables(int Sciantix_options[], double Sciantix_history[], double Scia
 	sciantix_variable[sv_counter].setInitialValue(0.0);
 	sciantix_variable[sv_counter].setFinalValue(0.0);
 	sciantix_variable[sv_counter].setOutput(0);
+	++sv_counter;
+
+	sciantix_variable.emplace_back();
+	sciantix_variable[sv_counter].setName("Chromium content");
+	sciantix_variable[sv_counter].setUOM("(µg/g)");
+	sciantix_variable[sv_counter].setInitialValue(Sciantix_variables[70]);
+	sciantix_variable[sv_counter].setFinalValue(Sciantix_variables[70]);
+	sciantix_variable[sv_counter].setOutput(toOutputChromiumContent);
+	++sv_counter;
+
+	sciantix_variable.emplace_back();
+	sciantix_variable[sv_counter].setName("Lattice parameter");
+	sciantix_variable[sv_counter].setUOM("(m)");
+	sciantix_variable[sv_counter].setInitialValue(Sciantix_variables[71]);
+	sciantix_variable[sv_counter].setFinalValue(Sciantix_variables[71]);
+	sciantix_variable[sv_counter].setOutput(1);
+	++sv_counter;
+
+	sciantix_variable.emplace_back();
+	sciantix_variable[sv_counter].setName("Theoretical density");
+	sciantix_variable[sv_counter].setUOM("(kg/m3)");
+	sciantix_variable[sv_counter].setInitialValue(Sciantix_variables[72]);
+	sciantix_variable[sv_counter].setFinalValue(Sciantix_variables[72]);
+	sciantix_variable[sv_counter].setOutput(1);
+	++sv_counter;
+
+	sciantix_variable.emplace_back();
+	sciantix_variable[sv_counter].setName("Chromium solubility");
+	sciantix_variable[sv_counter].setUOM("(% weight/UO2)");
+	sciantix_variable[sv_counter].setInitialValue(Sciantix_variables[73]);
+	sciantix_variable[sv_counter].setFinalValue(Sciantix_variables[73]);
+	sciantix_variable[sv_counter].setOutput(toOutputChromiumContent);
+	++sv_counter;
+
+	sciantix_variable.emplace_back();
+	sciantix_variable[sv_counter].setName("Chromia solubility");
+	sciantix_variable[sv_counter].setUOM("(% weight/UO2)");
+	sciantix_variable[sv_counter].setInitialValue(Sciantix_variables[74]);
+	sciantix_variable[sv_counter].setFinalValue(Sciantix_variables[74]);
+	sciantix_variable[sv_counter].setOutput(toOutputChromiumContent);
+	++sv_counter;
+
+	sciantix_variable.emplace_back();
+	sciantix_variable[sv_counter].setName("Chromium solution");
+	sciantix_variable[sv_counter].setUOM("(at/m3)");
+	sciantix_variable[sv_counter].setInitialValue(Sciantix_variables[75]);
+	sciantix_variable[sv_counter].setFinalValue(Sciantix_variables[75]);
+	sciantix_variable[sv_counter].setOutput(toOutputChromiumContent);
+	++sv_counter;
+
+	sciantix_variable.emplace_back();
+	sciantix_variable[sv_counter].setName("Chromium precipitate");
+	sciantix_variable[sv_counter].setUOM("(at/m3)");
+	sciantix_variable[sv_counter].setInitialValue(Sciantix_variables[76]);
+	sciantix_variable[sv_counter].setFinalValue(Sciantix_variables[76]);
+	sciantix_variable[sv_counter].setOutput(toOutputChromiumContent);
+	++sv_counter;
+
+	sciantix_variable.emplace_back();
+	sciantix_variable[sv_counter].setName("Chromia solution");
+	sciantix_variable[sv_counter].setUOM("(at/m3)");
+	sciantix_variable[sv_counter].setInitialValue(Sciantix_variables[77]);
+	sciantix_variable[sv_counter].setFinalValue(Sciantix_variables[77]);
+	sciantix_variable[sv_counter].setOutput(toOutputChromiumContent);
+	++sv_counter;
+
+	sciantix_variable.emplace_back();
+	sciantix_variable[sv_counter].setName("Chromia precipitate");
+	sciantix_variable[sv_counter].setUOM("(at/m3)");
+	sciantix_variable[sv_counter].setInitialValue(Sciantix_variables[78]);
+	sciantix_variable[sv_counter].setFinalValue(Sciantix_variables[78]);
+	sciantix_variable[sv_counter].setOutput(toOutputChromiumContent);
 	++sv_counter;
 
 	// ---------------

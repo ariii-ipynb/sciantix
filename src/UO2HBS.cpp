@@ -29,7 +29,6 @@ void UO2HBS()
 	
 	matrix[index].setName("UO2HBS");
 	matrix[index].setRef("\n\t");
-	matrix[index].setTheoreticalDensity(10970.0); // (kg/m3)
 	matrix[index].setGrainBoundaryMobility(0);
 	matrix[index].setSurfaceTension(0.7); // (N/m)
 	matrix[index].setFFinfluenceRadius(1.0e-9); // (m)
@@ -42,4 +41,6 @@ void UO2HBS()
 	matrix[index].setGrainRadius(150e-9); // (m)
 	matrix[index].setHealingTemperatureThreshold(1273.5); // K
 	matrix[index].setGrainBoundaryVacancyDiffusivity(0); // (m2/s)
+	matrix[index].setLatticeParameter(5.47109-10); // m
+	matrix[index].setTheoreticalDensity(10970.0); // (kg/m3)
 }

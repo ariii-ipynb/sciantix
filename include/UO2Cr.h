@@ -14,24 +14,17 @@
 //                                                                                  //
 //////////////////////////////////////////////////////////////////////////////////////
 
-/// This namespace contains relevant numeric constants that can be used in all the code.
+#include "MatrixDeclaration.h"
+#include "SciantixVariableDeclaration.h"
+#include "MapSciantixVariable.h"
+#include "HistoryVariableDeclaration.h"
+#include "MapHistoryVariable.h"
+#include "ModelDeclaration.h"
+#include "SystemDeclaration.h"
+#include "MapSystem.h"
+#include "MapModel.h"
+#include "SciantixScalingFactorDeclaration.h"
+#include <cmath>
 
-#ifndef CONSTANT_NUMBERS_H
-#define CONSTANT_NUMBERS_H
+void UO2Cr();
 
-namespace MathConstants
-{
-	const double pi = 3.141592653589793;
-}
-
-namespace PhysicsConstants
-{
-	const double boltzmann_constant = 1.380651e-23; // J/K
-	const double avogadro_number = 6.02214076e23; // at/mol
-	const double molar_mass_Oxigen = 15.999; // g/mol
-	const double molar_mass_Chromium = 51.9961; // g/mol
-	const double calorie = 4.186; // J
-	const double gas_constant = 8.3143; // J/(mol K)
-}
-
-#endif

@@ -14,20 +14,20 @@
 //                                                                                  //
 //////////////////////////////////////////////////////////////////////////////////////
 
-#include "UO2.h"
+#include "UO2Cr.h"
 
-void UO2()
+void UO2Cr()
 {
 	/**
-	 * @brief This routine defines the physical proprieties of the matrix UO2.
+	 * @brief This routine defines the physical proprieties of the matrix UO2-Cr2O3.
 	 * 
 	 */
 
 	matrix.emplace_back();
 	int index = int(matrix.size()) - 1;
 
-	matrix[index].setName("UO2");
-	matrix[index].setRef("\n\t");
+	matrix[index].setName("UO2CR");
+	matrix[index].setRef("\n\t");	
 	matrix[index].setGrainBoundaryMobility(int(input_variable[iv["iGrainGrowth"]].getValue()));
 	matrix[index].setSurfaceTension(0.7); // (N/m)
 	matrix[index].setFFinfluenceRadius(1.0e-9); // (m)
@@ -40,6 +40,13 @@ void UO2()
 	matrix[index].setGrainRadius(sciantix_variable[sv["Grain radius"]].getFinalValue()); // (m)
 	matrix[index].setHealingTemperatureThreshold(1273.5); // K
 	matrix[index].setGrainBoundaryVacancyDiffusivity(int(input_variable[iv["iGrainBoundaryVacancyDiffusivity"]].getValue())); // (m2/s)
-	matrix[index].setLatticeParameter(5.47109-10); // m
+	matrix[index].setChromiumContent(sciantix_variable[sv["Cromium content"]].getFinalValue()); // (µg/g)
+	matrix[index].setLatticeParameter(5.47109e-10); // m
 	matrix[index].setTheoreticalDensity(10970.0); // (kg/m3)
+	matrix[index].setChromiumSolubility(0); // (weight%/UO2)	
+	matrix[index].setChromiaSolubility(0); // (weight%/UO2)	
+	matrix[index].setChromiumSolution(0); // (at/m3)
+	matrix[index].setChromiumPrecipitate(0); // (at/m3)
+	matrix[index].setChromiaSolution(0); // (at/m3)
+	matrix[index].setChromiaPrecipitate(0); // (at/m3)
 }

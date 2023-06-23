@@ -88,6 +88,15 @@ void UpdateVariables(double Sciantix_variables[], double Sciantix_diffusion_mode
 	Sciantix_variables[65] = sciantix_variable[sv["Irradiation time"]].getFinalValue();
 	Sciantix_variables[66] = sciantix_variable[sv["Stoichiometry deviation"]].getFinalValue();
 	Sciantix_variables[67] = sciantix_variable[sv["Fuel oxygen partial pressure"]].getFinalValue();
+	Sciantix_variables[70] = sciantix_variable[sv["Chromium content"]].getFinalValue();
+	Sciantix_variables[71] = sciantix_variable[sv["Lattice parameter"]].getFinalValue();
+	Sciantix_variables[72] = sciantix_variable[sv["Theoretical density"]].getFinalValue();
+	Sciantix_variables[73] = sciantix_variable[sv["Chromium solubility"]].getFinalValue();
+	Sciantix_variables[74] = sciantix_variable[sv["Chromia solubility"]].getFinalValue();
+	Sciantix_variables[75] = sciantix_variable[sv["Chromium solution"]].getFinalValue();
+	Sciantix_variables[76] = sciantix_variable[sv["Chromium precipitate"]].getFinalValue();
+	Sciantix_variables[77] = sciantix_variable[sv["Chromia solution"]].getFinalValue();
+	Sciantix_variables[78] = sciantix_variable[sv["Chromia precipitate"]].getFinalValue();
 
 	for (int i = 0; i < n_modes; ++i)
 	{
