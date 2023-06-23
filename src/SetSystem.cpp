@@ -47,7 +47,8 @@ void SetSystem()
 			{
 				switch (k)
 				{
-
+					case 0: Xe_in_UO2Cr();				   MapSystem();			break;
+				
 					default:                                            	break;
 				}
 			}
