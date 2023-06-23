@@ -34,7 +34,7 @@ void Xe_in_UO2Cr()
 	sciantix_system[index].setVolumeInLattice(matrix[sma["UO2Cr"]].getSchottkyVolume());
 	sciantix_system[index].setHenryConstant(0.0);
 	sciantix_system[index].setProductionRate(1);
-	sciantix_system[index].setFissionGasDiffusivity(int(input_variable[iv["iFGDiffusionCoefficient"]].getValue()));
+	sciantix_system[index].setFissionGasDiffusivity(8);
 	sciantix_system[index].setResolutionRate(int(input_variable[iv["iResolutionRate"]].getValue()));
 	sciantix_system[index].setTrappingRate(int(input_variable[iv["iTrappingRate"]].getValue()));
 	sciantix_system[index].setNucleationRate(int(input_variable[iv["iNucleationRate"]].getValue()));

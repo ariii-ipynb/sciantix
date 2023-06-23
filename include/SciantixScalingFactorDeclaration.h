@@ -24,3 +24,4 @@ extern double sf_screw_parameter;
 extern double sf_span_parameter;
 extern double sf_cent_parameter;
 extern double sf_helium_production_rate;
+extern double sf_diffusivity_2;

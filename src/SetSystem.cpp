@@ -254,7 +254,67 @@ void System::setFissionGasDiffusivity(int input_value)
 		break;		
 	}
 
+	case 7:
+	{
+		/**
+		 * @brief this case is for the amorphous UO2Cr. value from @ref Owen et al. Journal of Nuclear Materials 576 (2023) 154270
+		 * 
+		 */
+		
+		const double boltzmann_constant = 8.63e-5; // (ev/K/atom)
+		// routine to calculate the Chromium content expressed in at.% 
+		double conv_fact = sciantix_variable[sv["Fuel density"]].getFinalValue() * PhysicsConstants::avogadro_number *10 * 0.8815 * 100; // to move from atoms/m3 to percentage in atoms (see Initializatio.cpp)
+		double molar_mass_Uranium = sciantix_variable[sv["U234"]].getFinalValue()/conv_fact *pow(234.04095,2)+ sciantix_variable[sv["U235"]].getFinalValue()/conv_fact *pow(235.04393,2)+  
+									sciantix_variable[sv["U236"]].getFinalValue()/conv_fact *pow(236.04557,2)+ sciantix_variable[sv["U237"]].getFinalValue()/conv_fact *pow(237.04873,2)+  
+									sciantix_variable[sv["U238"]].getFinalValue()/conv_fact *pow(238.05079,2);
 
+		double U_content = sciantix_variable[sv["U234"]].getFinalValue() + sciantix_variable[sv["U235"]].getFinalValue() +sciantix_variable[sv["U236"]].getFinalValue() +
+					   	   sciantix_variable[sv["U237"]].getFinalValue() + sciantix_variable[sv["U238"]].getFinalValue(); // (at U/m3)
+						   
+		double U_weight = U_content*molar_mass_Uranium/PhysicsConstants::avogadro_number; //(g U/m3)
+		double O2_weight = U_content*2*PhysicsConstants::molar_mass_Oxigen/PhysicsConstants::avogadro_number; //(g O2/m3)
+		double UO2_weight = U_weight + O2_weight; //(g UO2/m3)
+
+		double Cr_weight = UO2_weight*sciantix_variable[sv["Chromium content"]].getFinalValue()*1e-6; //(g Cr/m3)
+		double Cr_atoms = Cr_weight*PhysicsConstants::avogadro_number/PhysicsConstants::molar_mass_Chromium; //(atoms Cr/m3)
+		double Cr_content = Cr_atoms/(Cr_atoms + U_content)*100; //at.%
+
+		//linear fitting of amorphous Cr doped-UO2 data
+		double activation_energy = sf_diffusivity*(Cr_content -173.3)/(-532.3); 
+		double Pre_exponential_factor = sf_diffusivity_2*(Cr_content -41.93)/(-1.376e+9);
+
+		diffusivity = Pre_exponential_factor * exp(-activation_energy/(boltzmann_constant*history_variable[hv["Temperature"]].getFinalValue()));
+		
+		break;
+	}
+
+	case 8:
+	{	
+		/**
+		 * @brief this case is for the UO2Cr. value from @ref Che et al. Journal of Nuclear Materials 337 (2018) 
+		 * 
+		 */
+		double temperature = history_variable[hv["Temperature"]].getFinalValue();
+		double ratio = 0.00000000000136534225*pow(temperature,4) - 0.00000001306453509674*pow(temperature,3) + 0.00004692883297786190*pow(temperature,2) - 0.07522412500091140000*temperature + 45.6665146884581;
+			
+		if (ratio < 1564.5901639344263)
+		{
+			ratio = 1;
+		}
+		
+		double dimensional_Factor = PhysicsConstants::avogadro_number * sciantix_variable[sv["Fuel density"]].getFinalValue()/PhysicsConstants::molar_mass_Chromium;
+		double V_U_concentration = (9/4)*ratio*pow(sciantix_variable[sv["Chromium precipitate"]].getFinalValue()/ dimensional_Factor,2);
+
+		double d1 = 7.6e-10 * exp(-3.5e+4 /temperature);
+		double d2 = 4*1.41e-25*sqrt(history_variable[hv["Fission rate"]].getFinalValue()) * exp(-1.91e-19/temperature/(1.38e-23));
+		double d3 = 2e-40*history_variable[hv["Fission rate"]].getFinalValue();
+		double d4 = pow(1e-10,2) * 1e13 * exp(-2.78*1e+4/temperature)*V_U_concentration;
+
+		diffusivity = d1 +d2 +d3 +d4;
+		
+		break;
+	}
+	
 	case 99:
 	{
 		/**
