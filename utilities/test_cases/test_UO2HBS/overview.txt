@@ -2,7 +2,7 @@ Model #0: 	Burnup	The local burnup is calculated from the fission rate density.
 Model #1: 	Effective burnup	: G. Khvostov et al., WRFPM-2005, Kyoto, Japan, 2005.
 Model #2: 	High burnup structure formation	: Barani et al. Journal of Nuclear Materials 539 (2020) 152296
 Model #3: 	High burnup structure porosity	TRANSURANUS model, based on data from Spino et al. JNM 354 (2006) 66-84
-Model #4: 	Grain growth	constant grain radius.
+Model #4: 	Grain growth	Ainscough et al., JNM, 49 (1973) 117-128.
 Model #5: 	Grain-boundary sweeping	Not considered
 Model #6: 	Gas production - Xe in UO2	 
 Model #7: 	Gas production - Kr in UO2	 
@@ -18,10 +18,10 @@ Model #16: 	Gas diffusion - Xe133 in UO2
 Model #17: 	Gas diffusion - Kr85m in UO2	
 Model #18: 	Gas diffusion - Xe in UO2HBS	
 Model #19: 	Grain-boundary venting	not considered.
-Model #20: 	Intergranular bubble evolution	
+Model #20: 	Intergranular bubble evolution	: Pastore et al., NED, 256 (2013) 75-86.
 
 Matrix #0: 	UO2	
-	no grain-boundary mobility.
+	Ainscough et al., JNM, 49 (1973) 117-128.
 	iGrainBoundaryVacancyDiffusivity: from Reynolds and Burton, JNM, 82 (1979) 22-25.
 	
 Matrix #1: 	UO2HBS	
@@ -65,7 +65,7 @@ System #5: 	Xe in UO2HBS	Production rate = cumulative yield * fission rate densi
 	iNucleationRate: zero nucleation rate.
 	
 
-Input setting #0: 	iGrainGrowth = 0
+Input setting #0: 	iGrainGrowth = 1
 Input setting #1: 	iFGDiffusionCoefficient = 1
 Input setting #2: 	iDiffusionSolver = 1
 Input setting #3: 	iIntraGranularBubbleEvolution = 1
@@ -74,7 +74,7 @@ Input setting #5: 	iTrappingRate = 1
 Input setting #6: 	iNucleationRate = 1
 Input setting #7: 	iOutput = 1
 Input setting #8: 	iGrainBoundaryVacancyDiffusivity = 1
-Input setting #9: 	iGrainBoundaryBehaviour = 4
+Input setting #9: 	iGrainBoundaryBehaviour = 1
 Input setting #10: 	iGrainBoundaryMicroCracking = 0
 Input setting #11: 	iFuelMatrix = 1
 Input setting #12: 	iGrainBoundaryVenting = 0

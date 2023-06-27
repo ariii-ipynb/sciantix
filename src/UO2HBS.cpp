@@ -44,4 +44,6 @@ void UO2HBS()
 	matrix[index].setHealingTemperatureThreshold(1273.5); // K
 	matrix[index].setGrainBoundaryVacancyDiffusivity(4); // (m2/s)
 	matrix[index].setPoreNucleationRate();
+	matrix[index].setPoreTrappingRate();
+	matrix[index].setPoreResolutionRate();
 }

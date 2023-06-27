@@ -26,8 +26,6 @@ void HighBurnupStructurePorosity()
 	model[model_index].setName("High burnup structure porosity");
 	double porosity_increment = 0.0;
 	
-  const double pi = CONSTANT_NUMBERS_H::MathConstants::pi;
-
 	std::string reference;
 	std::vector<double> parameter;
 
