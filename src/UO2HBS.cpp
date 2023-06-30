@@ -42,4 +42,6 @@ void UO2HBS()
 	matrix[index].setGrainRadius(150e-9); // (m)
 	matrix[index].setHealingTemperatureThreshold(1273.5); // K
 	matrix[index].setGrainBoundaryVacancyDiffusivity(0); // (m2/s)
+	matrix[index].setPorosity(sciantix_variable[sv["Porosity"]].getFinalValue());
+	matrix[index].setSolidDensity(sciantix_variable[sv["Solid density"]].getFinalValue());
 }

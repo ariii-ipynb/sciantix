@@ -10,16 +10,28 @@
 //                                                                                  //
 //  Version: 2.0                                                                    //
 //  Year: 2022                                                                      //
-//  Authors: G. Zullo, G. Petrosillo                                                //
+//  Authors: D. Pizzocri, G. Zullo, A. Magni, E. Redaelli                           //
 //                                                                                  //
 //////////////////////////////////////////////////////////////////////////////////////
 
-#include "ModelDeclaration.h"
-#include "InputVariableDeclaration.h"
-#include "SciantixVariableDeclaration.h"
-#include "MapSciantixVariable.h"
-#include "HistoryVariableDeclaration.h"
-#include "MapHistoryVariable.h"
-#include "ConstantNumbers.h"
+#include "DensityUpdate.h"
 
-void StoichiometryDeviation( );
+void DensityUpdate()
+{
+	/**
+	 * @brief This function defines the sciantix model *DensityUpdate*.
+	 * 
+	 * The model *DensityUpdate* is used to evaluate the value of density considering a the evolution of porosity during irradiation.
+	 * 
+	 */
+
+	model.emplace_back();
+	int model_index = int(model.size()) - 1;
+
+	model[model_index].setName("Density Update");
+
+	sciantix_variable[sv["Fuel density"]].setFinalValue(
+	sciantix_variable[sv["Solid density"]].getFinalValue() / (1.0 + sciantix_variable[sv["Porosity"]].getFinalValue())
+	);
+
+}

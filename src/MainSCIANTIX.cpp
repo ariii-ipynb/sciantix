@@ -67,10 +67,9 @@ int main()
 		if (Sciantix_history[3] < 0.0) Sciantix_history[3] = 0.0;
 		Sciantix_history[4] = Sciantix_history[5];
 		Sciantix_history[5] = InputInterpolation(Time_h, Time_input, Hydrostaticstress_input, Input_history_points);
+
 		Sciantix_history[7] = Time_h;
 		Sciantix_history[8] = static_cast<double>(Time_step_number);
-		Sciantix_history[9] = Sciantix_history[10];
-		Sciantix_history[10] = InputInterpolation(Time_h, Time_input, Steampressure_input, Input_history_points);
 
 		Sciantix(Sciantix_options, Sciantix_history, Sciantix_variables, Sciantix_scaling_factors, Sciantix_diffusion_modes);
 

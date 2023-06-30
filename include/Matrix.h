@@ -24,6 +24,7 @@ class Matrix : virtual public Material
 {
 protected:
 	double matrix_density;
+	double solid_density;
 	double grain_boundary_mobility;
 	double ff_range;
 	double ff_influence_radius;
@@ -38,9 +39,10 @@ protected:
 	std::string matrix_name;
 	double healing_temperature_threshold;
 	double nucleation_rate;
+	double porosity;
+	double open_porosity;
 
 public:
-	
 	void setTheoreticalDensity(double m)
 	{
 		/// Member function to set the matrix theoretical density (kg/m3)
@@ -51,6 +53,42 @@ public:
 	{
 		/// Member function to get the matrix theoretical density (kg/m3)
 		return matrix_density;
+	}
+
+	void setSolidDensity(double s)
+	{
+		/// Member function to set the matrix solid density (kg/m3)
+		solid_density = s;
+	}
+
+	double getSolidDensity()
+	{
+		/// Member function to get the matrix solid density (kg/m3)
+		return solid_density;
+	}
+
+	void setPorosity(double p)
+	{
+		/// Member function to get the matrix porosity
+		porosity = p;
+	}
+
+	double getPorosity()
+	{
+		/// Member function to get the matrix porosity
+		return porosity;
+	}
+	
+		void setOpenPorosity(double p_open)
+	{
+		/// Member function to get the matrix open porosity
+		open_porosity = p_open;
+	}
+
+	double getOpenPorosity()
+	{
+		/// Member function to get the matrix open porosity
+		return open_porosity;
 	}
 
 	void setSurfaceTension(double r)
