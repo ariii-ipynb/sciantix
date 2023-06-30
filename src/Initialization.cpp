@@ -32,13 +32,14 @@ void Initialization()
 	Sciantix_history[4] = Hydrostaticstress_input[0];
 	Sciantix_history[5] = Hydrostaticstress_input[0];
 	Sciantix_history[6] = 0.0;
+	
+	Sciantix_history[9] = Steampressure_input[0];
+	Sciantix_history[10] = Steampressure_input[0];
 
 	// Sciantix_variables initialization
 	Sciantix_variables[25] = 4.0e+13;  // Intergranular_bubble_concentration[0]
 	Sciantix_variables[35] = 0.5;      // Intergranular_saturation_fractional_coverage[0]
 	Sciantix_variables[37] = 1.0;      // Intergranular_fractional_intactness[0]
-
-	Sciantix_variables[40] = 10970.0 * (1 - Sciantix_variables[66]);
 
 	// https://pubchem.ncbi.nlm.nih.gov/compound/Uranium-235
 	Sciantix_variables[41] *= Sciantix_variables[40] * 6.022e+24 * 0.8815 / 234.04095; // U-234
@@ -46,8 +47,6 @@ void Initialization()
 	Sciantix_variables[43] *= Sciantix_variables[40] * 6.022e+24 * 0.8815 / 236.04557; // U-236
 	Sciantix_variables[44] *= Sciantix_variables[40] * 6.022e+24 * 0.8815 / 237.04873; // U-237
 	Sciantix_variables[45] *= Sciantix_variables[40] * 6.022e+24 * 0.8815 / 238.05079; // U-238
-	
-	/*std::cout << Sciantix_variables[73] << std::endl;*/
 
 	// Initial HBS porosity
 	Sciantix_variables[56] = 1.0 - Sciantix_variables[40] / 10970.0;
@@ -55,13 +54,7 @@ void Initialization()
 	// Intragranular similarity ratio
 	Sciantix_variables[64] = 1.0;
 
-	// Initial fuel porosity = fabrication porosity
-	Sciantix_variables[67] = 	Sciantix_variables[66];
-
-	// Initial solid density = theoretical density
-	Sciantix_variables[69] = 10970.0;
-
-	// Projection on diffusion modes of the initial conditions
+	// projection on diffusion modes of the initial conditions
 	double initial_condition(0.0);
 	double projection_remainder(0.0);
 	double reconstructed_solution(0.0);
@@ -110,4 +103,9 @@ void Initialization()
 			projection_remainder = initial_condition - reconstructed_solution;
 		}
 	}
+
+	// Warnings
+	if(Sciantix_variables[38] > 0.0 && Sciantix_variables[65] == 0.0)
+		std::cout << "WARNING - FIMA calculation: Initial fuel burnup > 0 but null initial irradiation time. Check initial irradiation time." << std::endl;
+
 }

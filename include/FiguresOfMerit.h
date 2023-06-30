@@ -18,5 +18,11 @@
 #include "MapSciantixVariable.h"
 #include "PhysicsVariableDeclaration.h"
 #include "MapPhysicsVariable.h"
+#include "ConstantNumbers.h"
+#include "HistoryVariableDeclaration.h"
+#include "MapHistoryVariable.h"
+#include "MatrixDeclaration.h"
+#include "MapMatrix.h"
+#include <cmath>
 
 void FiguresOfMerit();

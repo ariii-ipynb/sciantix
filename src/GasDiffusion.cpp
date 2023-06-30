@@ -27,7 +27,6 @@ void GasDiffusion()
 	 */
 
 	std::string reference;
-
 	switch (int(input_variable[iv["iDiffusionSolver"]].getValue()))
 	{
 	case 1:
@@ -43,14 +42,16 @@ void GasDiffusion()
 
 			parameter.push_back(n_modes);
 			if (sciantix_system[i].getResolutionRate() + sciantix_system[i].getTrappingRate() == 0)
-				parameter.push_back(0.0);
+				parameter.push_back(sciantix_system[i].getFissionGasDiffusivity() * gas[ga[sciantix_system[i].getGasName()]].getPrecursorFactor());
 			else
 				parameter.push_back(
 					sciantix_system[i].getResolutionRate() /
-					(sciantix_system[i].getResolutionRate() + sciantix_system[i].getTrappingRate()) * sciantix_system[i].getDiffusivity() * gas[ga[sciantix_system[i].getGasName()]].getPrecursorFactor());
+					(sciantix_system[i].getResolutionRate() + sciantix_system[i].getTrappingRate()) * sciantix_system[i].getFissionGasDiffusivity() * gas[ga[sciantix_system[i].getGasName()]].getPrecursorFactor() + 
+					sciantix_system[i].getTrappingRate() /
+					(sciantix_system[i].getResolutionRate() + sciantix_system[i].getTrappingRate()) * sciantix_system[i].getBubbleDiffusivity() 
+				);
 
 			parameter.push_back(sciantix_variable[sv["Grain radius"]].getFinalValue());
-
 			parameter.push_back(sciantix_system[i].getProductionRate());
 			parameter.push_back(gas[ga[sciantix_system[i].getGasName()]].getDecayRate());
 
@@ -81,7 +82,7 @@ void GasDiffusion()
 			model[model_index].setRef(reference);
 
 			parameter.push_back(n_modes);
-			parameter.push_back(sciantix_system[i].getDiffusivity() * gas[ga[sciantix_system[i].getGasName()]].getPrecursorFactor());
+			parameter.push_back(sciantix_system[i].getFissionGasDiffusivity() * gas[ga[sciantix_system[i].getGasName()]].getPrecursorFactor());
 			parameter.push_back(sciantix_system[i].getResolutionRate());
 			parameter.push_back(sciantix_system[i].getTrappingRate());
 			parameter.push_back(gas[ga[sciantix_system[i].getGasName()]].getDecayRate());
@@ -90,7 +91,8 @@ void GasDiffusion()
 
 			parameter.push_back(sciantix_system[i].getProductionRate());
 			parameter.push_back(0.0);
-
+			parameter.push_back(sciantix_system[i].getBubbleDiffusivity());
+			
 			model[model_index].setParameter(parameter);
 			parameter.clear();
 		}

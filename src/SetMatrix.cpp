@@ -22,16 +22,34 @@ void SetMatrix( )
    * @brief This routine defines the available options for fuel matrices and their properties.
    * 
    */
-	for (int k = 0; k < 3; ++k)
-	{
-		switch (k)
-		{
-		  case 0: UO2();                MapMatrix();        break;
-		  case 1: UO2HBS();             MapMatrix();        break;
 
-		  default:                                          break;
+	switch (int(input_variable[iv["iFuelMatrix"]].getValue()))
+	{
+		case 0: 
+		{
+			UO2();
+			MapMatrix();
+
+			break;
 		}
+
+		case 1: 
+		{
+			UO2();
+			MapMatrix();
+
+			UO2HBS();
+			MapMatrix();
+
+			break;
+		}
+		
+		default:
+			ErrorMessages::Switch("SetMatrix.cpp", "iFuelMatrix", int(input_variable[iv["iFuelMatrix"]].getValue()));
+			break;
 	}
+
+
 }
 
 void Matrix::setGrainBoundaryMobility(int input_value)
@@ -65,11 +83,11 @@ void Matrix::setGrainBoundaryMobility(int input_value)
 	case 2 :
 	{
 		/**
-		 * @brief iGrainGrowth = 2 corresponds to the @ref Van Uffelen et al. JNM, 434 (2013) 287–29 grain-boundary mobility
+		 * @brief iGrainGrowth = 2 corresponds to the @ref Van Uffelen et al. JNM, 434 (2013) 287â€“29 grain-boundary mobility
 		 * 
 		*/
 
-		reference += "Van Uffelen et al. JNM, 434 (2013) 287–29.\n\t";
+		reference += "Van Uffelen et al. JNM, 434 (2013) 287â€“29.\n\t";
 		grain_boundary_mobility = 1.360546875e-15 * exp(- 46524.0 / history_variable[hv["Temperature"]].getFinalValue());
 		break;
 	}
@@ -87,49 +105,52 @@ void Matrix::setGrainBoundaryVacancyDiffusivity(int input_value)
 	 * @brief The diffusivity of the vacancies on the grain-boundaries is set according to the input_variable iGrainBoundaryVacancyDiffusivity.
 	 * 
 	 */
+	
+	const double boltzmann_constant = CONSTANT_NUMBERS_H::PhysicsConstants::boltzmann_constant;
+
 	switch (input_value)
 	{
-	case 0:
-	{
-		/**
-		 * @brief iGrainBoundaryVacancyDiffusivity = 0 corresponds to a constant diffusivity value, equal to 1e-30 m^2/s.
-		 * 
-		 */
+		case 0:
+		{
+			/**
+			 * @brief iGrainBoundaryVacancyDiffusivity = 0 corresponds to a constant diffusivity value, equal to 1e-30 m^2/s.
+			 * 
+			 */
 
-		grain_boundary_diffusivity = 1e-30;
-		reference += "iGrainBoundaryVacancyDiffusivity: constant value (1e-30 m^2/s).\n\t";
+			grain_boundary_diffusivity = 1e-30;
+			reference += "iGrainBoundaryVacancyDiffusivity: constant value (1e-30 m^2/s).\n\t";
 
-		break;
-	}
+			break;
+		}
 
-	case 1:
-	{
-		/**
-		 * @brief iGrainBoundaryVacancyDiffusivity = 1 corresponds to the relation from @ref Reynolds and Burton, JNM, 82 (1979) 22-25.
-		 * 
-		 */
+		case 1:
+		{
+			/**
+			 * @brief iGrainBoundaryVacancyDiffusivity = 1 corresponds to the relation from @ref Reynolds and Burton, JNM, 82 (1979) 22-25.
+			 * 
+			 */
 
-		grain_boundary_diffusivity = 6.9e-04 * exp(-3.88e+04 / history_variable[hv["Temperature"]].getFinalValue());
-		reference += "iGrainBoundaryVacancyDiffusivity: from Reynolds and Burton, JNM, 82 (1979) 22-25.\n\t";
+			grain_boundary_diffusivity = 6.9e-04 * exp(- 5.35e-19 / (boltzmann_constant * history_variable[hv["Temperature"]].getFinalValue()));
+			reference += "iGrainBoundaryVacancyDiffusivity: from Reynolds and Burton, JNM, 82 (1979) 22-25.\n\t";
 
-		break;
-	}
+			break;
+		}
 
-	case 2:
-	{
-		/**
-		 * @brief iGrainBoundaryVacancyDiffusivity = 2 corresponds to the correction from @ref Pastore et al., JNM, 456 (2015) 156.
-		 * 
-		 */
+		case 2:
+		{
+			/**
+			 * @brief iGrainBoundaryVacancyDiffusivity = 2 corresponds to the correction from @ref Pastore et al., JNM, 456 (2015) 156.
+			 * 
+			 */
 
-		grain_boundary_diffusivity = (3.5 / 5.0) * 8.86e-6 * exp(-4.17e+04 / history_variable[hv["Temperature"]].getFinalValue());
-		reference += "iGrainBoundaryVacancyDiffusivity: from Pastore et al., JNM, 456 (2015) 156.\n\t";
+			grain_boundary_diffusivity = 8.86e-6 * exp(- 5.75e-19 / (boltzmann_constant * history_variable[hv["Temperature"]].getFinalValue()));
+			reference += "iGrainBoundaryVacancyDiffusivity: from Pastore et al., JNM, 456 (2015) 156.\n\t";
 
-		break;
-	}
+			break;
+		}
 
-	default:
-		ErrorMessages::Switch("SetMatrix.cpp", "iGrainBoundaryVacancyDiffusivity", input_value);
-		break;
+		default:
+			ErrorMessages::Switch("SetMatrix.cpp", "iGrainBoundaryVacancyDiffusivity", input_value);
+			break;
 	}
 }

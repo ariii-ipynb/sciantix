@@ -10,13 +10,16 @@
 //                                                                                  //
 //  Version: 2.0                                                                    //
 //  Year: 2022                                                                      //
-//  Authors: D. Pizzocri, G. Zullo.                                                 //
+//  Authors: G. Zullo, G. Petrosillo                                                //
 //                                                                                  //
 //////////////////////////////////////////////////////////////////////////////////////
 
 #include "SciantixVariableDeclaration.h"
-#include "MapSciantixVariable.h"
+#include "HistoryVariableDeclaration.h"
 #include "ModelDeclaration.h"
-#include "SetMatrix.h"
+#include "MapSciantixVariable.h"
+#include "MapHistoryVariable.h"
 
-void DensityUpdate();
+void UO2Thermochemistry();
+
+double BlackburnThermochemicalModel(double stoichiometry_deviation, double temperature);

@@ -35,6 +35,7 @@ protected:
 	double radius_in_lattice;
 	double volume_in_lattice;
 	double diffusivity;
+	double bubble_diffusivity;
 	double henry_constant;
 	double resolution_rate;
 	double trapping_rate;
@@ -92,11 +93,23 @@ public:
 		/// Member function to set the volume occupied by the gas in matrix
 		volume_in_lattice = v;
 	}
+	
+	void setBubbleDiffusivity(int input_value);
+	double getBubbleDiffusivity()
+	{
+		/// Member function to get the bubble diffusivity of the isotope in the fuel matrix
+		return bubble_diffusivity;	
+	}
 
-	void setFissionGasDiffusivity(int input_value);
 	void setHeliumDiffusivity(int input_value);
+	double getHeliumDiffusivity()
+	{
+		/// Member function to get the bubble diffusivity of the isotope in the fuel matrix
+		return diffusivity;	
+	}
 
-	double getDiffusivity()
+	void setFissionGasDiffusivity(int input_value);	
+	double getFissionGasDiffusivity()
 	{
 		/// Member function to get the diffusivity of the isotope in the fuel matrix
 		return diffusivity;

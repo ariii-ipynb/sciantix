@@ -20,7 +20,8 @@
 #include "SystemDeclaration.h"
 #include "MapPhysicsVariable.h"
 #include "PhysicsVariableDeclaration.h"
-
+#include "GasDeclaration.h"
+#include "MapGas.h"
 #include "Xe_in_UO2.h"
 #include "Xe133_in_UO2.h"
 #include "Kr_in_UO2.h"

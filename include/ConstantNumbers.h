@@ -30,10 +30,4 @@ namespace PhysicsConstants
 	const double avogadro_number = 6.02214076e23; // at/mol
 }
 
-namespace ConstantParameters
-{
-	const double E_fiss = 3.12e-17;		// MJ
-	const double MM_U235 = 235.04393;	// g/mol
-}
-
 #endif

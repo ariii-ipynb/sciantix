@@ -70,4 +70,22 @@ void FiguresOfMerit()
     );
   else
     sciantix_variable[sv["He release rate"]].setFinalValue(0.0);
+
+  // Fuel oxygen potential
+  if(sciantix_variable[sv["Fuel oxygen partial pressure"]].getFinalValue() == 0.0)
+    sciantix_variable[sv["Fuel oxygen potential"]].setFinalValue(0.0);
+  else
+    sciantix_variable[sv["Fuel oxygen potential"]].setFinalValue(8.314*1.0e-3*history_variable[hv["Temperature"]].getFinalValue()*log(sciantix_variable[sv["Fuel oxygen partial pressure"]].getFinalValue()/0.1013));
+    
+	const double boltzmann_constant = CONSTANT_NUMBERS_H::PhysicsConstants::boltzmann_constant;
+
+  // Intergranular bubble pressure p = kTng/Onv
+  if(sciantix_variable[sv["Intergranular vacancies per bubble"]].getFinalValue())
+    sciantix_variable[sv["Intergranular bubble pressure"]].setFinalValue(1e-6 *
+      boltzmann_constant * history_variable[hv["Temperature"]].getFinalValue() *
+      sciantix_variable[sv["Intergranular atoms per bubble"]].getFinalValue() /
+      (sciantix_variable[sv["Intergranular vacancies per bubble"]].getFinalValue() * matrix[0].getSchottkyVolume())
+    );
+  else
+    sciantix_variable[sv["Intergranular bubble pressure"]].setFinalValue(0.0);
 }

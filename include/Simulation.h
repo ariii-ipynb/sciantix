@@ -36,10 +36,10 @@
 #include "SciantixDiffusionModeDeclaration.h"
 #include "SystemDeclaration.h"
 #include "MapSystem.h"
-#include "MatrixDeclaration.h" 
+#include "MatrixDeclaration.h"
 #include "MapMatrix.h"
 #include "ConstantNumbers.h"
-#include "DensityUpdate.h"
+#include "UO2Thermochemistry.h"
 
 /// @brief
 /// Derived class representing the operations of SCIANTIX. The conjunction of the models with the implemented solvers results in the simulation.
@@ -50,13 +50,9 @@ public:
 
 	void Burnup()
 	{
-
-		const double N_av = CONSTANT_NUMBERS_H::PhysicsConstants::avogadro_number;
-		const double E_fiss = CONSTANT_NUMBERS_H::ConstantParameters::E_fiss;
-		const double M_U = CONSTANT_NUMBERS_H::ConstantParameters::MM_U235;
-
 		/// @brief Burnup uses the solver Integrator to computes the fuel burnup from the local power density.
 		/// This method is called in Sciantix.cpp, after the definition of the Burnup model.
+		
 		sciantix_variable[sv["Burnup"]].setFinalValue(
 			solver.Integrator(
 				sciantix_variable[sv["Burnup"]].getInitialValue(),
@@ -64,23 +60,22 @@ public:
 				physics_variable[pv["Time step"]].getFinalValue()
 			)
 		);
-		
-		sciantix_variable[sv["FIMA"]].setFinalValue(
-			history_variable[hv["Fission rate"]].getFinalValue() * history_variable[hv["Time"]].getFinalValue() * 3.6e5 / 
-			sciantix_variable[sv["U"]].getFinalValue()
-		);
-	
+
 		if(history_variable[hv["Fission rate"]].getFinalValue() > 0.0)
 			sciantix_variable[sv["Irradiation time"]].setFinalValue(
 				solver.Integrator(
 					sciantix_variable[sv["Irradiation time"]].getInitialValue(),
 					1.0 / sciantix_variable[sv["Specific power"]].getFinalValue(),
-					24.0 * sciantix_variable[sv["Burnup"]].getIncrement() 
+					24.0 * sciantix_variable[sv["Burnup"]].getIncrement()
 				)
 			);
 		else
 			sciantix_variable[sv["Irradiation time"]].setConstant();
-	
+			
+		sciantix_variable[sv["FIMA"]].setFinalValue(
+			history_variable[hv["Fission rate"]].getFinalValue() * history_variable[hv["Irradiation time"]].getFinalValue() * 3.6e5 / 
+			sciantix_variable[sv["U"]].getFinalValue()
+		);
 	}
 
 	void EffectiveBurnup()
@@ -163,247 +158,65 @@ public:
 		}
 	}
 
-	void XeDiffusion()
-	{
-		if (int(input_variable[iv["iDiffusionSolver"]].getValue()) == 1)
-		{
-			sciantix_variable[sv["Xe in grain"]].setFinalValue(
-				solver.SpectralDiffusion(
-					xe_diffusion_modes,
-					model[sm["Gas diffusion - Xe in " + matrix[0].getName()]].getParameter(),
-					physics_variable[pv["Time step"]].getFinalValue()
-				)
-			);
-
-			double equilibrium_fraction(1.0);
-			if ((sciantix_system[sy["Xe in UO2"]].getResolutionRate() + sciantix_system[sy["Xe in UO2"]].getTrappingRate()) > 0.0)
-				equilibrium_fraction = sciantix_system[sy["Xe in UO2"]].getResolutionRate() / (sciantix_system[sy["Xe in UO2"]].getResolutionRate() + sciantix_system[sy["Xe in UO2"]].getTrappingRate());
-
-			sciantix_variable[sv["Xe in intragranular solution"]].setFinalValue(
-				equilibrium_fraction * sciantix_variable[sv["Xe in grain"]].getFinalValue());
-
-			sciantix_variable[sv["Xe in intragranular bubbles"]].setFinalValue(
-				(1.0 - equilibrium_fraction) * sciantix_variable[sv["Xe in grain"]].getFinalValue());
-		}
-
-		else if (input_variable[iv["iDiffusionSolver"]].getValue() == 2)
-		{
-			double initial_value_solution = sciantix_variable[sv["Xe in intragranular solution"]].getFinalValue();
-			double initial_value_bubbles = sciantix_variable[sv["Xe in intragranular bubbles"]].getFinalValue();
-
-			solver.SpectralDiffusionNonEquilibrium(
-				initial_value_solution,
-				initial_value_bubbles,
-				xe_diffusion_modes_solution,
-				xe_diffusion_modes_bubbles,
-				model[sm["Gas diffusion - Xe in " + matrix[0].getName()]].getParameter(),
-				physics_variable[pv["Time step"]].getFinalValue()
-			);
-
-			sciantix_variable[sv["Xe in intragranular solution"]].setFinalValue(initial_value_solution);
-			sciantix_variable[sv["Xe in intragranular bubbles"]].setFinalValue(initial_value_bubbles);
-			sciantix_variable[sv["Xe in grain"]].setFinalValue(initial_value_solution + initial_value_bubbles);
-		}	
-	}
-
-	void Xe133Diffusion()
-	{
-		if (input_variable[iv["iDiffusionSolver"]].getValue() == 1)
-		{
-			sciantix_variable[sv["Xe133 in grain"]].setFinalValue(
-				solver.SpectralDiffusion(
-					xe133_diffusion_modes,
-					model[sm["Gas diffusion - Xe133 in UO2"]].getParameter(),
-					physics_variable[pv["Time step"]].getFinalValue()
-				)
-			);
-
-			double equilibrium_fraction(1.0);
-			if ((sciantix_system[sy["Xe133 in UO2"]].getResolutionRate() + sciantix_system[sy["Xe133 in UO2"]].getTrappingRate()) > 0.0)
-				equilibrium_fraction = sciantix_system[sy["Xe133 in UO2"]].getResolutionRate() / (sciantix_system[sy["Xe133 in UO2"]].getResolutionRate() + sciantix_system[sy["Xe133 in UO2"]].getTrappingRate());
-
-			sciantix_variable[sv["Xe133 in intragranular solution"]].setFinalValue(
-				equilibrium_fraction * sciantix_variable[sv["Xe133 in grain"]].getFinalValue());
-
-			sciantix_variable[sv["Xe133 in intragranular bubbles"]].setFinalValue(
-				(1 - equilibrium_fraction) * sciantix_variable[sv["Xe133 in grain"]].getFinalValue());
-		}
-
-		else if (input_variable[iv["iDiffusionSolver"]].getValue() == 2)
-		{
-			double initial_value_solution = sciantix_variable[sv["Xe133 in intragranular solution"]].getFinalValue();
-			double initial_value_bubbles = sciantix_variable[sv["Xe133 in intragranular bubbles"]].getFinalValue();
-
-			solver.SpectralDiffusionNonEquilibrium(
-				initial_value_solution,
-				initial_value_bubbles,
-				xe133_diffusion_modes_solution,
-				xe133_diffusion_modes_bubbles,
-				model[sm["Gas diffusion - Xe133 in UO2"]].getParameter(),
-				physics_variable[pv["Time step"]].getFinalValue()
-			);
-
-			sciantix_variable[sv["Xe133 in intragranular solution"]].setFinalValue(initial_value_solution);
-			sciantix_variable[sv["Xe133 in intragranular bubbles"]].setFinalValue(initial_value_bubbles);
-			sciantix_variable[sv["Xe133 in grain"]].setFinalValue(initial_value_solution + initial_value_bubbles);
-		}
-	}
-
-	void Kr85mDiffusion()
-	{
-		if (input_variable[iv["iDiffusionSolver"]].getValue() == 1)
-		{
-			sciantix_variable[sv["Kr85m in grain"]].setFinalValue(
-				solver.SpectralDiffusion(
-					kr85m_diffusion_modes,
-					model[sm["Gas diffusion - Kr85m in UO2"]].getParameter(),
-					physics_variable[pv["Time step"]].getFinalValue()
-				)
-			);
-
-			double equilibrium_fraction(1.0);
-			if ((sciantix_system[sy["Kr85m in UO2"]].getResolutionRate() + sciantix_system[sy["Kr85m in UO2"]].getTrappingRate()) > 0.0)
-				equilibrium_fraction = sciantix_system[sy["Kr85m in UO2"]].getResolutionRate() / (sciantix_system[sy["Kr85m in UO2"]].getResolutionRate() + sciantix_system[sy["Kr85m in UO2"]].getTrappingRate());
-
-			sciantix_variable[sv["Kr85m in intragranular solution"]].setFinalValue(
-				equilibrium_fraction * sciantix_variable[sv["Kr85m in grain"]].getFinalValue());
-
-			sciantix_variable[sv["Kr85m in intragranular bubbles"]].setFinalValue(
-				(1 - equilibrium_fraction) * sciantix_variable[sv["Kr85m in grain"]].getFinalValue());
-		}
-
-		else if (input_variable[iv["iDiffusionSolver"]].getValue() == 2)
-		{
-			double initial_value_solution = sciantix_variable[sv["Kr85m in intragranular solution"]].getFinalValue();
-			double initial_value_bubbles = sciantix_variable[sv["Kr85m in intragranular bubbles"]].getFinalValue();
-
-			solver.SpectralDiffusionNonEquilibrium(
-				initial_value_solution,
-				initial_value_bubbles,
-				kr85m_diffusion_modes_solution,
-				kr85m_diffusion_modes_bubbles,
-				model[sm["Gas diffusion - Kr85m in UO2"]].getParameter(),
-				physics_variable[pv["Time step"]].getFinalValue()
-			);
-
-			sciantix_variable[sv["Kr85m in intragranular solution"]].setFinalValue(initial_value_solution);
-			sciantix_variable[sv["Kr85m in intragranular bubbles"]].setFinalValue(initial_value_bubbles);
-			sciantix_variable[sv["Kr85m in grain"]].setFinalValue(initial_value_solution + initial_value_bubbles);
-		}
-	}
-
-	void KrDiffusion()
-	{
-		if (input_variable[iv["iDiffusionSolver"]].getValue() == 1)
-		{
-			sciantix_variable[sv["Kr in grain"]].setFinalValue(
-				solver.SpectralDiffusion(
-					kr_diffusion_modes,
-					model[sm["Gas diffusion - Kr in " + matrix[0].getName()]].getParameter(),
-					physics_variable[pv["Time step"]].getFinalValue()
-				)
-			);
-
-			double equilibrium_fraction(1.0);
-			if ((sciantix_system[sy["Kr in UO2"]].getResolutionRate() + sciantix_system[sy["Kr in UO2"]].getTrappingRate()) > 0.0)
-				equilibrium_fraction = sciantix_system[sy["Kr in UO2"]].getResolutionRate() / (sciantix_system[sy["Kr in UO2"]].getResolutionRate() + sciantix_system[sy["Kr in UO2"]].getTrappingRate());
-
-			sciantix_variable[sv["Kr in intragranular solution"]].setFinalValue(
-				equilibrium_fraction * sciantix_variable[sv["Kr in grain"]].getFinalValue());
-
-			sciantix_variable[sv["Kr in intragranular bubbles"]].setFinalValue(
-				(1 - equilibrium_fraction) * sciantix_variable[sv["Kr in grain"]].getFinalValue());
-		}
-
-		else if (input_variable[iv["iDiffusionSolver"]].getValue() == 2)
-		{
-			double initial_value_solution = sciantix_variable[sv["Kr in intragranular solution"]].getFinalValue();
-			double initial_value_bubbles = sciantix_variable[sv["Kr in intragranular bubbles"]].getFinalValue();
-
-			solver.SpectralDiffusionNonEquilibrium(
-				initial_value_solution,
-				initial_value_bubbles,
-				kr_diffusion_modes_solution,
-				kr_diffusion_modes_bubbles,
-				model[sm["Gas diffusion - Kr in " + matrix[0].getName()]].getParameter(),
-				physics_variable[pv["Time step"]].getFinalValue()
-			);
-
-			sciantix_variable[sv["Kr in intragranular solution"]].setFinalValue(initial_value_solution);
-			sciantix_variable[sv["Kr in intragranular bubbles"]].setFinalValue(initial_value_bubbles);
-			sciantix_variable[sv["Kr in grain"]].setFinalValue(initial_value_solution + initial_value_bubbles);
-		}
-	}
-
-	/**
-	 * @brief ### Intragranular helium diffusion
-	 * 
-	 */
-	void HeDiffusion()
-	{
-		/**
-		 * @brief iDiffusionSolver = 1
-		 * 
-		 */
-		if (input_variable[iv["iDiffusionSolver"]].getValue() == 1)
-		{
-			sciantix_variable[sv["He in grain"]].setFinalValue(
-				solver.SpectralDiffusion(
-					he_diffusion_modes,
-					model[sm["Gas diffusion - He in UO2"]].getParameter(),
-					physics_variable[pv["Time step"]].getFinalValue()
-				)
-			);
-
-			double equilibrium_fraction(1.0);
-			if ((sciantix_system[sy["He in UO2"]].getResolutionRate() + sciantix_system[sy["He in UO2"]].getTrappingRate()) > 0.0)
-				equilibrium_fraction = sciantix_system[sy["He in UO2"]].getResolutionRate() / (sciantix_system[sy["He in UO2"]].getResolutionRate() + sciantix_system[sy["He in UO2"]].getTrappingRate());
-
-			sciantix_variable[sv["He in intragranular solution"]].setFinalValue(equilibrium_fraction * sciantix_variable[sv["He in grain"]].getFinalValue());
-			sciantix_variable[sv["He in intragranular bubbles"]].setFinalValue((1.0 - equilibrium_fraction) * sciantix_variable[sv["He in grain"]].getFinalValue());
-		}
-
-		/**
-		 * @brief iDiffusionSolver = 2
-		 * 
-		 */
-		else if (input_variable[iv["iDiffusionSolver"]].getValue() == 2)
-		{
-			double initial_value_solution = sciantix_variable[sv["He in intragranular solution"]].getFinalValue();
-			double initial_value_bubbles = sciantix_variable[sv["He in intragranular bubbles"]].getFinalValue();
-
-			solver.SpectralDiffusionNonEquilibrium(
-				initial_value_solution,
-				initial_value_bubbles,
-				he_diffusion_modes_solution,
-				he_diffusion_modes_bubbles,
-				model[sm["Gas diffusion - He in UO2"]].getParameter(),
-				physics_variable[pv["Time step"]].getFinalValue()
-			);
-
-			sciantix_variable[sv["He in intragranular solution"]].setFinalValue(initial_value_solution);
-			sciantix_variable[sv["He in intragranular bubbles"]].setFinalValue(initial_value_bubbles);
-			sciantix_variable[sv["He in grain"]].setFinalValue(initial_value_solution + initial_value_bubbles);
-		}
-
-		if(sciantix_variable[sv["He in intragranular bubbles"]].getInitialValue() > 0.0)
-    	sciantix_variable[sv["Intragranular similarity ratio"]].setFinalValue(sqrt(sciantix_variable[sv["He in intragranular bubbles"]].getFinalValue() / sciantix_variable[sv["He in intragranular bubbles"]].getInitialValue()));
-		else
-			sciantix_variable[sv["Intragranular similarity ratio"]].setFinalValue(0.0);
-	}
-
 	void GasDiffusion()
 	{
 		/// @brief
 		/// GasDiffusion
-		/// This simulation method solves the PDE for the intra-granular gas diffusion within the (ideal) spherical fuel grain.
+		/// This simulation method solves the PDE for the intra-granular gas diffusion within the (ideal) spherical fuel grain.		
+		for (std::vector<System>::size_type i = 0; i != sciantix_system.size(); ++i)
+		{
+			switch (int(input_variable[iv["iDiffusionSolver"]].getValue()))
+			{
+				case 1:
+				{
+					sciantix_variable[sv[sciantix_system[i].getGasName() + " in grain"]].setFinalValue(
+						solver.SpectralDiffusion(
+							getDiffusionModes(sciantix_system[i].getGasName()),
+							model[sm["Gas diffusion - " + sciantix_system[i].getName()]].getParameter(),
+							physics_variable[pv["Time step"]].getFinalValue()
+						)
+					);
 
-		XeDiffusion();
-		Xe133Diffusion();
-		KrDiffusion();
-		HeDiffusion();
-		Kr85mDiffusion();
+					double equilibrium_fraction(1.0);
+					if ((sciantix_system[i].getResolutionRate() + sciantix_system[i].getTrappingRate()) > 0.0)
+						equilibrium_fraction = sciantix_system[i].getResolutionRate() / (sciantix_system[i].getResolutionRate() + sciantix_system[i].getTrappingRate());
 
+					sciantix_variable[sv[sciantix_system[i].getGasName() + " in intragranular solution"]].setFinalValue(
+						equilibrium_fraction * sciantix_variable[sv[sciantix_system[i].getGasName() + " in grain"]].getFinalValue());
+
+					sciantix_variable[sv[sciantix_system[i].getGasName() + " in intragranular bubbles"]].setFinalValue(
+						(1.0 - equilibrium_fraction) * sciantix_variable[sv[sciantix_system[i].getGasName() + " in grain"]].getFinalValue());
+
+					break;
+				}
+
+				case 2:
+				{
+					double initial_value_solution = sciantix_variable[sv[sciantix_system[i].getGasName() + " in intragranular solution"]].getFinalValue();
+					double initial_value_bubbles  = sciantix_variable[sv[sciantix_system[i].getGasName() + " in intragranular bubbles"]].getFinalValue();
+
+					solver.SpectralDiffusionNonEquilibrium(
+						initial_value_solution,
+						initial_value_bubbles,
+						getDiffusionModesSolution(sciantix_system[i].getGasName()),
+						getDiffusionModesBubbles(sciantix_system[i].getGasName()),
+						model[sm["Gas diffusion - " + sciantix_system[i].getName()]].getParameter(),
+						physics_variable[pv["Time step"]].getFinalValue()
+					);
+
+					sciantix_variable[sv[sciantix_system[i].getGasName() + " in intragranular solution"]].setFinalValue(initial_value_solution);
+					sciantix_variable[sv[sciantix_system[i].getGasName() + " in intragranular bubbles"]].setFinalValue(initial_value_bubbles);
+					sciantix_variable[sv[sciantix_system[i].getGasName() + " in grain"]].setFinalValue(initial_value_solution + initial_value_bubbles);
+					
+					break;
+				}
+
+				default:
+					ErrorMessages::Switch("Simulation.h", "iDiffusionSolver", int(input_variable[iv["iDiffusionSolver"]].getValue()));
+					break;
+			}
+		}
+	
 		// Calculation of the gas concentration arrived at the grain boundary, by mass balance.
 		for (std::vector<System>::size_type i = 0; i != sciantix_system.size(); ++i)
 		{
@@ -427,6 +240,7 @@ public:
 		{
 			for (std::vector<System>::size_type i = 0; i != sciantix_system.size(); ++i)
 			{
+				sciantix_variable[sv[sciantix_system[i].getGasName() + " at grain boundary"]].setInitialValue(0.0);
 				sciantix_variable[sv[sciantix_system[i].getGasName() + " at grain boundary"]].setFinalValue(0.0);
 
 				sciantix_variable[sv[sciantix_system[i].getGasName() + " released"]].setFinalValue(
@@ -435,23 +249,6 @@ public:
 					sciantix_variable[sv[sciantix_system[i].getGasName() + " in grain"]].getFinalValue()
 				);
 			}
-		}
-	}
-
-	
-	void AthermalRelease()
-		{
-				// Gas is vented by subtracting a fraction of the gas concentration at grain boundaries arrived from diffusion
-				// Bf = Bf - f_ath * dB
-			for (std::vector<System>::size_type i = 0; i != sciantix_system.size(); ++i)
-			{
-				sciantix_variable[sv[sciantix_system[i].getGasName() + " at grain boundary"]].setFinalValue(
-				solver.Integrator(
-					sciantix_variable[sv[sciantix_system[i].getGasName() + " at grain boundary"]].getFinalValue(),
-					- sciantix_variable[sv["Athermal release factor"]].getFinalValue(),
-					sciantix_variable[sv[sciantix_system[i].getGasName() + " at grain boundary"]].getIncrement()
-				)
-		);
 		}
 	}
 
@@ -514,8 +311,11 @@ public:
 			sciantix_variable[sv["Intragranular bubble concentration"]].getFinalValue()
 		);
 
-		sciantix_variable[sv["Porosity"]].addValue(sciantix_variable[sv["Intragranular gas swelling"]].getIncrement());
-	
+		if(sciantix_variable[sv["He in intragranular bubbles"]].getInitialValue() > 0.0)
+			sciantix_variable[sv["Intragranular similarity ratio"]].setFinalValue(sqrt(sciantix_variable[sv["He in intragranular bubbles"]].getFinalValue() / sciantix_variable[sv["He in intragranular bubbles"]].getInitialValue()));
+		else
+			sciantix_variable[sv["Intragranular similarity ratio"]].setFinalValue(0.0);
+
 	}
 
 	void InterGranularBubbleBehaviour()
@@ -530,7 +330,7 @@ public:
 			)
 		);
 
-		// Bubble volume
+		// Grain-boundary bubble volume
 		double vol(0);
 		for (std::vector<System>::size_type i = 0; i != sciantix_system.size(); ++i)
 			// This for loop slides over only the stable gases, which determine the grain-boundary bubble dynamics
@@ -541,19 +341,19 @@ public:
 					gas[ga[sciantix_system[i].getGasName()]].getVanDerWaalsVolume();
 			}
 		}
-		vol += sciantix_variable[sv["Intergranular vacancies per bubble"]].getFinalValue() * matrix[sma["UO2"]].getSchottkyVolume();
+		vol += sciantix_variable[sv["Intergranular vacancies per bubble"]].getFinalValue() * matrix[0].getSchottkyVolume();
 		sciantix_variable[sv["Intergranular bubble volume"]].setFinalValue(vol);
 
-		// Bubble radius
+		// Grain-boundary bubble radius
 		sciantix_variable[sv["Intergranular bubble radius"]].setFinalValue(
-			0.620350491 * pow(sciantix_variable[sv["Intergranular bubble volume"]].getFinalValue() / (matrix[sma["UO2"]].getLenticularShapeFactor()), 1. / 3.));
+			0.620350491 * pow(sciantix_variable[sv["Intergranular bubble volume"]].getFinalValue() / (matrix[0].getLenticularShapeFactor()), 1. / 3.));
 
-		// Bubble area
+		// Grain-boundary bubble area
 		sciantix_variable[sv["Intergranular bubble area"]].setFinalValue(
-			pi * pow(sciantix_variable[sv["Intergranular bubble radius"]].getFinalValue() * sin(matrix[sma["UO2"]].getSemidihedralAngle()), 2));
+			pi * pow(sciantix_variable[sv["Intergranular bubble radius"]].getFinalValue() * sin(matrix[0].getSemidihedralAngle()), 2));
 
-		// Coalescence
-		double dbubble_area = sciantix_variable[sv["Intergranular bubble area"]].getIncrement(); // dA
+		// Grain-boundary bubble coalescence
+		double dbubble_area = sciantix_variable[sv["Intergranular bubble area"]].getIncrement();
 		sciantix_variable[sv["Intergranular bubble concentration"]].setFinalValue(
 			solver.BinaryInteraction(sciantix_variable[sv["Intergranular bubble concentration"]].getInitialValue(), 2.0, dbubble_area));
 
@@ -562,9 +362,8 @@ public:
 		{
 			if (gas[ga[sciantix_system[i].getGasName()]].getDecayRate() == 0.0)
 			{
-				sciantix_variable[sv["Intergranular " + sciantix_system[i].getGasName() + " atoms per bubble"]].rescaleValue(
-					sciantix_variable[sv["Intergranular bubble concentration"]].getInitialValue() /
-					sciantix_variable[sv["Intergranular bubble concentration"]].getFinalValue()
+				sciantix_variable[sv["Intergranular " + sciantix_system[i].getGasName() + " atoms per bubble"]].rescaleFinalValue(
+					sciantix_variable[sv["Intergranular bubble concentration"]].getInitialValue() / sciantix_variable[sv["Intergranular bubble concentration"]].getFinalValue()
 				);
 			}
 		}
@@ -577,9 +376,8 @@ public:
 		}
 		sciantix_variable[sv["Intergranular atoms per bubble"]].setFinalValue(n_at);
 
-		sciantix_variable[sv["Intergranular vacancies per bubble"]].rescaleValue(
-			sciantix_variable[sv["Intergranular bubble concentration"]].getInitialValue() /
-			sciantix_variable[sv["Intergranular bubble concentration"]].getFinalValue()
+		sciantix_variable[sv["Intergranular vacancies per bubble"]].rescaleFinalValue(
+			sciantix_variable[sv["Intergranular bubble concentration"]].getInitialValue() / sciantix_variable[sv["Intergranular bubble concentration"]].getFinalValue()
 		);
 
 		vol = 0.0;
@@ -591,14 +389,15 @@ public:
 					gas[ga[sciantix_system[i].getGasName()]].getVanDerWaalsVolume();
 			}
 		}
-		vol += sciantix_variable[sv["Intergranular vacancies per bubble"]].getFinalValue() * matrix[sma["UO2"]].getSchottkyVolume();
+		vol += sciantix_variable[sv["Intergranular vacancies per bubble"]].getFinalValue() * matrix[0].getSchottkyVolume();
 		sciantix_variable[sv["Intergranular bubble volume"]].setFinalValue(vol);
 
 		sciantix_variable[sv["Intergranular bubble radius"]].setFinalValue(
-			0.620350491 * pow(sciantix_variable[sv["Intergranular bubble volume"]].getFinalValue() / (matrix[sma["UO2"]].getLenticularShapeFactor()), 1. / 3.));
+			0.620350491 * pow(sciantix_variable[sv["Intergranular bubble volume"]].getFinalValue() / (matrix[0].getLenticularShapeFactor()), 1. / 3.));
 
+		// sciantix_variable[sv["Intergranular bubble area"]].setInitialValue(sciantix_variable[sv["Intergranular bubble area"]].getFinalValue());
 		sciantix_variable[sv["Intergranular bubble area"]].setFinalValue(
-			pi * pow(sciantix_variable[sv["Intergranular bubble radius"]].getFinalValue() * sin(matrix[sma["UO2"]].getSemidihedralAngle()), 2));
+			pi * pow(sciantix_variable[sv["Intergranular bubble radius"]].getFinalValue() * sin(matrix[0].getSemidihedralAngle()), 2));
 
 		// Fractional coverage
 		sciantix_variable[sv["Intergranular fractional coverage"]].setFinalValue(
@@ -613,31 +412,43 @@ public:
 		//   |          F1        N1 N0
 		//   |                    |  |
 		//   |____________________|__|
-		const double similarity_ratio = sqrt(
-			sciantix_variable[sv["Intergranular saturation fractional coverage"]].getFinalValue() /
-			sciantix_variable[sv["Intergranular fractional coverage"]].getFinalValue()
-		);
+		double similarity_ratio;
+		
+		if (sciantix_variable[sv["Intergranular fractional coverage"]].getFinalValue() > 0.0)
+			similarity_ratio = sqrt(
+				sciantix_variable[sv["Intergranular saturation fractional coverage"]].getFinalValue() /
+				sciantix_variable[sv["Intergranular fractional coverage"]].getFinalValue()
+			);
+		else
+			similarity_ratio = 1.0;
 
 		if (similarity_ratio < 1.0)
 		{
-			sciantix_variable[sv["Intergranular bubble area"]].rescaleValue(similarity_ratio);
-			sciantix_variable[sv["Intergranular bubble concentration"]].rescaleValue(similarity_ratio);
-			sciantix_variable[sv["Intergranular fractional coverage"]].rescaleValue(pow(similarity_ratio, 2));
-			sciantix_variable[sv["Intergranular bubble volume"]].rescaleValue(pow(similarity_ratio, 1.5));
-			sciantix_variable[sv["Intergranular bubble radius"]].rescaleValue(pow(similarity_ratio, 0.5));
-			sciantix_variable[sv["Intergranular vacancies per bubble"]].rescaleValue(pow(similarity_ratio, 1.5));
-			sciantix_variable[sv["Intergranular atoms per bubble"]].rescaleValue(pow(similarity_ratio, 1.5));
+			sciantix_variable[sv["Intergranular bubble area"]].rescaleFinalValue(similarity_ratio);
+			sciantix_variable[sv["Intergranular bubble concentration"]].rescaleFinalValue(similarity_ratio);
+			sciantix_variable[sv["Intergranular fractional coverage"]].rescaleFinalValue(pow(similarity_ratio, 2));
+			sciantix_variable[sv["Intergranular bubble volume"]].rescaleFinalValue(pow(similarity_ratio, 1.5));
+			sciantix_variable[sv["Intergranular bubble radius"]].rescaleFinalValue(pow(similarity_ratio, 0.5));
+			sciantix_variable[sv["Intergranular vacancies per bubble"]].rescaleFinalValue(pow(similarity_ratio, 1.5));
 
 			// New intergranular gas concentration
 			for (std::vector<System>::size_type i = 0; i != sciantix_system.size(); ++i)
 			{
 				if (gas[ga[sciantix_system[i].getGasName()]].getDecayRate() == 0.0)
-					sciantix_variable[sv["Intergranular " + sciantix_system[i].getGasName() + " atoms per bubble"]].rescaleValue(pow(similarity_ratio, 1.5));
+					sciantix_variable[sv["Intergranular " + sciantix_system[i].getGasName() + " atoms per bubble"]].rescaleFinalValue(pow(similarity_ratio, 1.5));
 			}
+
+			n_at = 0.0;
+			for (std::vector<System>::size_type i = 0; i != sciantix_system.size(); ++i)
+			{
+				if (gas[ga[sciantix_system[i].getGasName()]].getDecayRate() == 0.0)
+					n_at += sciantix_variable[sv["Intergranular " + sciantix_system[i].getGasName() + " atoms per bubble"]].getFinalValue();
+			}
+			sciantix_variable[sv["Intergranular atoms per bubble"]].setFinalValue(n_at);
 
 			for (std::vector<System>::size_type i = 0; i != sciantix_system.size(); ++i)
 			{
-				sciantix_variable[sv[sciantix_system[i].getGasName() + " at grain boundary"]].rescaleValue(pow(similarity_ratio, 2.5));
+				sciantix_variable[sv[sciantix_system[i].getGasName() + " at grain boundary"]].rescaleFinalValue(pow(similarity_ratio, 2.5));
 			}
 		}
 
@@ -649,61 +460,72 @@ public:
 				sciantix_variable[sv[sciantix_system[i].getGasName() + " in grain"]].getFinalValue() -
 				sciantix_variable[sv[sciantix_system[i].getGasName() + " at grain boundary"]].getFinalValue()
 			);
+
+			if(sciantix_variable[sv[sciantix_system[i].getGasName() + " released"]].getFinalValue() < 0.0)
+				sciantix_variable[sv[sciantix_system[i].getGasName() + " released"]].setFinalValue(0.0);
 		}
 
-		// Swelling
+		// Intergranular gaseous swelling
 		sciantix_variable[sv["Intergranular gas swelling"]].setFinalValue(
 			3 / sciantix_variable[sv["Grain radius"]].getFinalValue() *
 			sciantix_variable[sv["Intergranular bubble concentration"]].getFinalValue() *
 			sciantix_variable[sv["Intergranular bubble volume"]].getFinalValue()
 		);
-
-		sciantix_variable[sv["Porosity"]].addValue(sciantix_variable[sv["Intergranular gas swelling"]].getIncrement());
-		
 	}
 
 	void GrainBoundarySweeping()
 	{
-		// Sweeping of the gas concentrations
+		// Sweeping of the intra-granular gas concentrations
 		// dC / df = - C
 
 		if (!input_variable[iv["Grain-boundary sweeping"]].getValue()) return;
 
 		// intra-granular gas diffusion modes
-		if (input_variable[iv["iDiffusionSolver"]].getValue() == 1)
+		switch (int(input_variable[iv["iDiffusionSolver"]].getValue()))
 		{
-			for (int i = 0; i < n_modes; ++i)
+			case 1:
 			{
-				he_diffusion_modes[i] =
-					solver.Decay(
-						he_diffusion_modes[i],
-						1.0,
-						0.0,
-						model[sm["Grain-boundary sweeping"]].getParameter().at(0)
-					);
+				for (int i = 0; i < n_modes; ++i)
+				{
+					modes_initial_conditions[6 * 40 + i] =
+						solver.Decay(
+							modes_initial_conditions[6 * 40 + i],
+							1.0,
+							0.0,
+							model[sm["Grain-boundary sweeping"]].getParameter().at(0)
+						);
+				}
+				
+				break;
 			}
-		}
 
-		else if (input_variable[iv["iDiffusionSolver"]].getValue() == 2)
-		{
-			for (int i = 0; i < n_modes; ++i)
+			case 2:
 			{
-				he_diffusion_modes_solution[i] =
-					solver.Decay(
-						he_diffusion_modes_solution[i],
-						1.0,
-						0.0,
-						model[sm["Grain-boundary sweeping"]].getParameter().at(0)
-					);
+				for (int i = 0; i < n_modes; ++i)
+				{
+					modes_initial_conditions[7 * 40 + i] =
+						solver.Decay(
+							modes_initial_conditions[7 * 40 + i],
+							1.0,
+							0.0,
+							model[sm["Grain-boundary sweeping"]].getParameter().at(0)
+						);
 
-				he_diffusion_modes_bubbles[i] =
-					solver.Decay(
-						he_diffusion_modes_bubbles[i],
-						1.0,
-						0.0,
-						model[sm["Grain-boundary sweeping"]].getParameter().at(0)
-					);
+					modes_initial_conditions[8 * 40 + i] =
+						solver.Decay(
+							modes_initial_conditions[8 * 40 + i],
+							1.0,
+							0.0,
+							model[sm["Grain-boundary sweeping"]].getParameter().at(0)
+						);
+				}
+
+				break;
 			}
+
+			default:
+				ErrorMessages::Switch("Simulation.h", "iDiffusionSolver", int(input_variable[iv["iDiffusionSolver"]].getValue()));
+				break;
 		}
 	}
 
@@ -712,8 +534,6 @@ public:
 		/// GrainBoundaryMicroCracking is method of simulation which executes the SCIANTIX simulation for the grain-boundary micro-cracking induced by a temperature difference. 
 		/// This method calls the related model "Grain-boundary micro-cracking", takes the model parameters and solve the model ODEs.
 
-		// If the model has not been activated, exit from this simulation.
-		// The same line is in GrainBoundaryMicroCracking.C
 		if (!input_variable[iv["iGrainBoundaryMicroCracking"]].getValue()) return;
 
 		// ODE for the intergranular fractional intactness: this equation accounts for the reduction of the intergranular fractional intactness following a temperature transient
@@ -770,29 +590,41 @@ public:
 		);
 
 		// Re-scaling: to maintain the current fractional coverage unchanged
-		const double similarity_ratio = sqrt(
-			sciantix_variable[sv["Intergranular fractional coverage"]].getFinalValue() / sciantix_variable[sv["Intergranular fractional coverage"]].getInitialValue()
-		);
+		double similarity_ratio;
+		
+		if (sciantix_variable[sv["Intergranular fractional coverage"]].getInitialValue() > 0.0)
+			similarity_ratio = sqrt(
+				sciantix_variable[sv["Intergranular fractional coverage"]].getFinalValue() / sciantix_variable[sv["Intergranular fractional coverage"]].getInitialValue()
+			);
+		else
+			similarity_ratio = 1.0;
 
 		if (similarity_ratio < 1.0)
 		{
-			sciantix_variable[sv["Intergranular bubble area"]].rescaleValue(similarity_ratio);
-			sciantix_variable[sv["Intergranular bubble concentration"]].rescaleValue(similarity_ratio);
-			sciantix_variable[sv["Intergranular fractional coverage"]].rescaleValue(pow(similarity_ratio, 2));
-			sciantix_variable[sv["Intergranular bubble volume"]].rescaleValue(pow(similarity_ratio, 1.5));
-			sciantix_variable[sv["Intergranular bubble radius"]].rescaleValue(pow(similarity_ratio, 0.5));
-			sciantix_variable[sv["Intergranular vacancies per bubble"]].rescaleValue(pow(similarity_ratio, 1.5));
-			sciantix_variable[sv["Intergranular atoms per bubble"]].rescaleValue(pow(similarity_ratio, 1.5));
+			sciantix_variable[sv["Intergranular bubble area"]].rescaleInitialValue(similarity_ratio);
+			sciantix_variable[sv["Intergranular bubble concentration"]].rescaleInitialValue(similarity_ratio);
+			sciantix_variable[sv["Intergranular fractional coverage"]].rescaleInitialValue(pow(similarity_ratio, 2));
+			sciantix_variable[sv["Intergranular bubble volume"]].rescaleInitialValue(pow(similarity_ratio, 1.5));
+			sciantix_variable[sv["Intergranular bubble radius"]].rescaleInitialValue(pow(similarity_ratio, 0.5));
+			sciantix_variable[sv["Intergranular vacancies per bubble"]].rescaleInitialValue(pow(similarity_ratio, 1.5));
 
 			for (std::vector<System>::size_type i = 0; i != sciantix_system.size(); ++i)
 			{
 				if (gas[ga[sciantix_system[i].getGasName()]].getDecayRate() == 0.0)
-					sciantix_variable[sv["Intergranular " + sciantix_system[i].getGasName() + " atoms per bubble"]].rescaleValue(pow(similarity_ratio, 1.5));
+					sciantix_variable[sv["Intergranular " + sciantix_system[i].getGasName() + " atoms per bubble"]].rescaleInitialValue(pow(similarity_ratio, 1.5));
 			}
+
+			double n_at(0);
+			for (std::vector<System>::size_type i = 0; i != sciantix_system.size(); ++i)
+			{
+				if (gas[ga[sciantix_system[i].getGasName()]].getDecayRate() == 0.0)
+					n_at += sciantix_variable[sv["Intergranular " + sciantix_system[i].getGasName() + " atoms per bubble"]].getInitialValue();
+			}
+			sciantix_variable[sv["Intergranular atoms per bubble"]].setInitialValue(n_at);
 
 			for (std::vector<System>::size_type i = 0; i != sciantix_system.size(); ++i)
 			{
-				sciantix_variable[sv[sciantix_system[i].getGasName() + " at grain boundary"]].rescaleValue(pow(similarity_ratio, 2.5));
+				sciantix_variable[sv[sciantix_system[i].getGasName() + " at grain boundary"]].rescaleFinalValue(pow(similarity_ratio, 2.5));
 			}
 		}
 
@@ -807,29 +639,12 @@ public:
 		}
 	}
 
-
-	void SolidSwelling()
-	{
-		sciantix_variable[sv["Solid swelling"]].setFinalValue(
-			sciantix_variable[sv["FIMA"]].getFinalValue() * model[sm["Solid swelling"]].getParameter().at(0) / 100
-		);
-
-		sciantix_variable[sv["Xe solid swelling"]].setFinalValue(
-			sciantix_variable[sv["Xe in intragranular solution"]].getFinalValue() / (sciantix_variable[sv["U"]].getFinalValue()) * 1.072 // maybe uo2
-		);
-
-		sciantix_variable[sv["Solid density"]].setFinalValue(
-			matrix[sma["UO2"]].getTheoreticalDensity() / 
-			(1.0 + sciantix_variable[sv["Solid swelling"]].getFinalValue() + sciantix_variable[sv["Xe solid swelling"]].getFinalValue())
-		);
-	}
-
 	void GrainBoundaryVenting()
 	{
 		if (!int(input_variable[iv["iGrainBoundaryVenting"]].getValue())) return;
 
 		double sigmoid_variable;
-		sigmoid_variable = sciantix_variable[sv["Intergranular fractional coverage"]].getFinalValue() *
+		sigmoid_variable = sciantix_variable[sv["Intergranular fractional coverage"]].getInitialValue() *
 			exp(1.0 - sciantix_variable[sv["Intergranular fractional intactness"]].getFinalValue());
 
 		// Vented fraction
@@ -850,6 +665,7 @@ public:
 		// Gas is vented by subtracting a fraction of the gas concentration at grain boundaries arrived from diffusion
 		// Bf = Bf - p_v * dB
 		for (std::vector<System>::size_type i = 0; i != sciantix_system.size(); ++i)
+		{
 			sciantix_variable[sv[sciantix_system[i].getGasName() + " at grain boundary"]].setFinalValue(
 				solver.Integrator(
 					sciantix_variable[sv[sciantix_system[i].getGasName() + " at grain boundary"]].getFinalValue(),
@@ -857,6 +673,8 @@ public:
 					sciantix_variable[sv[sciantix_system[i].getGasName() + " at grain boundary"]].getIncrement()
 				)
 			);
+		sciantix_variable[sv[sciantix_system[i].getGasName() + " at grain boundary"]].resetValue();
+		}
 	}
 
 	void HighBurnupStructurePorosity()
@@ -874,14 +692,124 @@ public:
 				model[sm["High burnup structure porosity"]].getParameter().at(0),
 				sciantix_variable[sv["Burnup"]].getIncrement()
 			)
-			/*Include it in the porosity evolution*/
 		);
 
-		sciantix_variable[sv["Porosity"]].addValue(sciantix_variable[sv["HBS porosity"]].getIncrement());
-		
+		// density evolution
+		sciantix_variable[sv["Fuel density"]].setFinalValue(
+			matrix[0].getTheoreticalDensity() * (1.0 - sciantix_variable[sv["HBS porosity"]].getFinalValue())
+		);
 	}
 
 
+ void StoichiometryDeviation()
+ {
+	if (!input_variable[iv["iStoichiometryDeviation"]].getValue()) return;
+
+  if(history_variable[hv["Temperature"]].getFinalValue() < 1000.0)
+  {
+    sciantix_variable[sv["Stoichiometry deviation"]].setConstant();
+    sciantix_variable[sv["Fuel oxygen partial pressure"]].setFinalValue(0.0);
+  }
+
+  else if(input_variable[iv["iStoichiometryDeviation"]].getValue() < 5)
+  {	
+    sciantix_variable[sv["Stoichiometry deviation"]].setFinalValue(
+      solver.Decay(
+      sciantix_variable[sv["Stoichiometry deviation"]].getInitialValue(),
+          model[sm["Stoichiometry deviation"]].getParameter().at(0),
+          model[sm["Stoichiometry deviation"]].getParameter().at(1),
+          physics_variable[pv["Time step"]].getFinalValue()
+      )
+    );
+	}
+
+	else if(input_variable[iv["iStoichiometryDeviation"]].getValue() > 4)
+	{
+		sciantix_variable[sv["Stoichiometry deviation"]].setFinalValue(
+			solver.NewtonLangmuirBasedModel(
+				sciantix_variable[sv["Stoichiometry deviation"]].getInitialValue(),
+					model[sm["Stoichiometry deviation"]].getParameter(),
+					physics_variable[pv["Time step"]].getFinalValue()
+			)
+		);
+	}
+
+	sciantix_variable[sv["Fuel oxygen partial pressure"]].setFinalValue(
+		BlackburnThermochemicalModel(
+			sciantix_variable[sv["Stoichiometry deviation"]].getFinalValue(),
+			history_variable[hv["Temperature"]].getFinalValue()
+			)
+		);
+ }
+
+  void UO2Thermochemistry()
+  {
+		if (!input_variable[iv["iStoichiometryDeviation"]].getValue()) return;
+
+    if(history_variable[hv["Temperature"]].getFinalValue() < 1000.0 || sciantix_variable[sv["Gap oxygen partial pressure"]].getFinalValue() == 0)
+			sciantix_variable[sv["Equilibrium stoichiometry deviation"]].setFinalValue(0.0);
+
+    else
+      sciantix_variable[sv["Equilibrium stoichiometry deviation"]].setFinalValue(
+        solver.NewtonBlackburn(
+        	model[sm["UO2 thermochemistry"]].getParameter()
+				)
+      );
+	}
+
+	double* getDiffusionModes(std::string gas_name)
+	{	
+		if(gas_name == "Xe")
+			return &modes_initial_conditions[0];
+
+		else if(gas_name == "Kr")
+			return &modes_initial_conditions[3 * 40];
+
+		else if(gas_name == "He")
+			return &modes_initial_conditions[6 * 40];
+
+		else if(gas_name == "Xe133")
+			return &modes_initial_conditions[9 * 40];
+
+		else // (gas_name == "Kr85m")
+			return &modes_initial_conditions[12 * 40];
+	}
+
+	double* getDiffusionModesSolution(std::string gas_name)
+	{	
+		if(gas_name == "Xe")
+			return &modes_initial_conditions[1 * 40];
+
+		else if(gas_name == "Kr")
+			return &modes_initial_conditions[4 * 40];
+
+		else if(gas_name == "He")
+			return &modes_initial_conditions[7 * 40];
+
+		else if(gas_name == "Xe133")
+			return &modes_initial_conditions[10 * 40];
+
+		else // (gas_name == "Kr85m")
+			return &modes_initial_conditions[13 * 40];
+	}
+
+	double* getDiffusionModesBubbles(std::string gas_name)
+	{	
+		if(gas_name == "Xe")
+			return &modes_initial_conditions[2 * 40];
+
+		else if(gas_name == "Kr")
+			return &modes_initial_conditions[5 * 40];
+
+		else if(gas_name == "He")
+			return &modes_initial_conditions[8 * 40];
+
+		else if(gas_name == "Xe133")
+			return &modes_initial_conditions[11 * 40];
+
+		else // (gas_name == "Kr85m")
+			return &modes_initial_conditions[14 * 40];
+	}
 
 	Simulation() {}
 	~Simulation() {}

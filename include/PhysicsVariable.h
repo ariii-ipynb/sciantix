@@ -29,7 +29,13 @@ protected:
 	bool to_output;
 
 public:
-	void rescaleValue(const double factor)
+	void rescaleInitialValue(const double factor)
+	{
+		// Function to rescale the final value
+		initial_value *= factor;
+	}
+
+	void rescaleFinalValue(const double factor)
 	{
 		// Function to rescale the final value
 		final_value *= factor;
@@ -54,6 +60,11 @@ public:
 	void setConstant()
 	{
 		final_value = initial_value;
+	}
+
+	void resetValue()
+	{
+		initial_value = final_value;
 	}
 
 	void setFinalValue(double FinalValue)

@@ -86,28 +86,25 @@ void UpdateVariables(double Sciantix_variables[], double Sciantix_diffusion_mode
 	Sciantix_variables[63] = sciantix_variable[sv["Kr85m released"]].getFinalValue();
 	Sciantix_variables[64] = sciantix_variable[sv["Intragranular similarity ratio"]].getFinalValue();
 	Sciantix_variables[65] = sciantix_variable[sv["Irradiation time"]].getFinalValue();
-	Sciantix_variables[66] = sciantix_variable[sv["Fabrication porosity"]].getFinalValue();
-	Sciantix_variables[67] = sciantix_variable[sv["Porosity"]].getFinalValue();
-	Sciantix_variables[69] = sciantix_variable[sv["Solid density"]].getFinalValue();
-	Sciantix_variables[71] = sciantix_variable[sv["Solid swelling"]].getFinalValue();
-	Sciantix_variables[72] = sciantix_variable[sv["Xe solid swelling"]].getFinalValue();
+	Sciantix_variables[66] = sciantix_variable[sv["Stoichiometry deviation"]].getFinalValue();
+	Sciantix_variables[67] = sciantix_variable[sv["Fuel oxygen partial pressure"]].getFinalValue();
 
 	for (int i = 0; i < n_modes; ++i)
 	{
-		Sciantix_diffusion_modes[i] = xe_diffusion_modes[i];
-		Sciantix_diffusion_modes[1 * n_modes + i] = xe_diffusion_modes_solution[i];
-		Sciantix_diffusion_modes[2 * n_modes + i] = xe_diffusion_modes_bubbles[i];
-		Sciantix_diffusion_modes[3 * n_modes + i] = kr_diffusion_modes[i];
-		Sciantix_diffusion_modes[4 * n_modes + i] = kr_diffusion_modes_solution[i];
-		Sciantix_diffusion_modes[5 * n_modes + i] = kr_diffusion_modes_bubbles[i];
-		Sciantix_diffusion_modes[6 * n_modes + i] = he_diffusion_modes[i];
-		Sciantix_diffusion_modes[7 * n_modes + i] = he_diffusion_modes_solution[i];
-		Sciantix_diffusion_modes[8 * n_modes + i] = he_diffusion_modes_bubbles[i];
-		Sciantix_diffusion_modes[9 * n_modes + i] = xe133_diffusion_modes[i];
-		Sciantix_diffusion_modes[10 * n_modes + i] = xe133_diffusion_modes_solution[i];
-		Sciantix_diffusion_modes[11 * n_modes + i] = xe133_diffusion_modes_bubbles[i];
-		Sciantix_diffusion_modes[12 * n_modes + i] = kr85m_diffusion_modes[i];
-		Sciantix_diffusion_modes[13 * n_modes + i] = kr85m_diffusion_modes_solution[i];
-		Sciantix_diffusion_modes[14 * n_modes + i] = kr85m_diffusion_modes_bubbles[i];
+		Sciantix_diffusion_modes[i] = modes_initial_conditions[i];
+		Sciantix_diffusion_modes[1 * n_modes + i] = modes_initial_conditions[1 * n_modes + i];
+		Sciantix_diffusion_modes[2 * n_modes + i] = modes_initial_conditions[2 * n_modes + i];
+		Sciantix_diffusion_modes[3 * n_modes + i] = modes_initial_conditions[3 * n_modes + i];
+		Sciantix_diffusion_modes[4 * n_modes + i] = modes_initial_conditions[4 * n_modes + i];
+		Sciantix_diffusion_modes[5 * n_modes + i] = modes_initial_conditions[5 * n_modes + i];
+		Sciantix_diffusion_modes[6 * n_modes + i] = modes_initial_conditions[6 * n_modes + i];
+		Sciantix_diffusion_modes[7 * n_modes + i] = modes_initial_conditions[7 * n_modes + i];
+		Sciantix_diffusion_modes[8 * n_modes + i] = modes_initial_conditions[8 * n_modes + i];
+		Sciantix_diffusion_modes[9 * n_modes + i] = modes_initial_conditions[9 * n_modes + i];
+		Sciantix_diffusion_modes[10 * n_modes + i] = modes_initial_conditions[10 * n_modes + i];
+		Sciantix_diffusion_modes[11 * n_modes + i] = modes_initial_conditions[11 * n_modes + i];
+		Sciantix_diffusion_modes[12 * n_modes + i] = modes_initial_conditions[12 * n_modes + i];
+		Sciantix_diffusion_modes[13 * n_modes + i] = modes_initial_conditions[13 * n_modes + i];
+		Sciantix_diffusion_modes[14 * n_modes + i] = modes_initial_conditions[14 * n_modes + i];
 	}
 }
