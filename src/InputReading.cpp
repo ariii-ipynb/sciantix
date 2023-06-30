@@ -250,7 +250,7 @@ void InputReading()
 		Sciantix_variables[38] = ReadOneParameter("Burn_up[0]", input_initial_conditions, input_check);
 		Sciantix_variables[39] = ReadOneParameter("Effective_burn_up[0]", input_initial_conditions, input_check);
 		Sciantix_variables[65] = ReadOneParameter("Irradiation_time[0]", input_initial_conditions, input_check);
-		Sciantix_variables[40] = ReadOneParameter("Fuel_density[0]", input_initial_conditions, input_check);
+		// Sciantix_variables[40] = ReadOneParameter("Fuel_density[0]", input_initial_conditions, input_check);
 
 		std::vector<double> initial_composition_U;
 		initial_composition_U = ReadSeveralParameters("Initial composition U", input_initial_conditions, input_check);

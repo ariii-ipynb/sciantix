@@ -15,9 +15,10 @@ Model #13: 	Gas diffusion - Kr in UO2
 Model #14: 	Gas diffusion - He in UO2	
 Model #15: 	Gas diffusion - Xe133 in UO2	
 Model #16: 	Gas diffusion - Kr85m in UO2	
-Model #17: 	Grain-boundary micro-cracking	from Barani et al. (2017), JNM
-Model #18: 	Grain-boundary venting	not considered.
-Model #19: 	Intergranular bubble evolution	: Pastore et al., NED, 256 (2013) 75-86.
+Model #17: 	Porosity	Claisse et al. Journal of Nuclear Materials 466 (2015) 351-356.
+Model #18: 	Grain-boundary micro-cracking	from Barani et al. (2017), JNM
+Model #19: 	Grain-boundary venting	not considered.
+Model #20: 	Intergranular bubble evolution	: Pastore et al., NED, 256 (2013) 75-86.
 
 Matrix #0: 	UO2	
 	Ainscough et al., JNM, 49 (1973) 117-128.
@@ -78,4 +79,5 @@ Input setting #19: 	iHighBurnupStructurePorosity = 0
 Input setting #20: 	iHeliumProductionRate = 0
 Input setting #21: 	iStoichiometryDeviation = 0
 Input setting #22: 	iBubbleDiffusivity = 0
+Input setting #23: 	iAthermalRelease = 1
 

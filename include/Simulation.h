@@ -679,6 +679,9 @@ public:
 
 	void AthermalRelease()
 	{
+
+		if (!input_variable[iv["iAthermalRelease"]].getValue()) return;
+
 		// Gas is vented by subtracting a fraction of the gas concentration at grain boundaries arrived from diffusion
 		// Bf = Bf - f_ath * dB
 		for (std::vector<System>::size_type i = 0; i != sciantix_system.size(); ++i)

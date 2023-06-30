@@ -148,6 +148,11 @@ void SetVariables(int Sciantix_options[], double Sciantix_history[], double Scia
 		input_variable[iv_counter].setName("iBubbleDiffusivity");
 		input_variable[iv_counter].setValue(Sciantix_options[22]);
 		++iv_counter;
+
+		input_variable.emplace_back();
+		input_variable[iv_counter].setName("iAthermalRelease");
+		input_variable[iv_counter].setValue(Sciantix_options[23]);
+		++iv_counter;
 	}
 
 	MapInputVariable();
@@ -933,18 +938,18 @@ void SetVariables(int Sciantix_options[], double Sciantix_history[], double Scia
 	++sv_counter;
 
 	sciantix_variable.emplace_back();
-	sciantix_variable[sv_counter].setName("Open porosity");
-	sciantix_variable[sv_counter].setUOM("(/)");
-	sciantix_variable[sv_counter].setInitialValue(0.0);
-	sciantix_variable[sv_counter].setFinalValue(0.0);
-	sciantix_variable[sv_counter].setOutput(0);
-	++sv_counter;
-
-	sciantix_variable.emplace_back();
 	sciantix_variable[sv_counter].setName("Fabrication porosity");
 	sciantix_variable[sv_counter].setUOM("(/)");
 	sciantix_variable[sv_counter].setInitialValue(Sciantix_variables[70]);
 	sciantix_variable[sv_counter].setFinalValue(Sciantix_variables[70]);
+	sciantix_variable[sv_counter].setOutput(0);
+	++sv_counter;
+
+	sciantix_variable.emplace_back();
+	sciantix_variable[sv_counter].setName("Open porosity");
+	sciantix_variable[sv_counter].setUOM("(/)");
+	sciantix_variable[sv_counter].setInitialValue(0.0);
+	sciantix_variable[sv_counter].setFinalValue(0.0);
 	sciantix_variable[sv_counter].setOutput(0);
 	++sv_counter;
 
