@@ -41,7 +41,7 @@ void Initialization()
 	Sciantix_variables[35] = 0.5;      // Intergranular_saturation_fractional_coverage[0]
 	Sciantix_variables[37] = 1.0;      // Intergranular_fractional_intactness[0]
 
-	// Fuel density
+	// Initial fuel density, from fabrication porosity
 	Sciantix_variables[40] = 10970 * (1 - Sciantix_variables[70]);
 
 	// https://pubchem.ncbi.nlm.nih.gov/compound/Uranium-235
