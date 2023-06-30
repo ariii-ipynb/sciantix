@@ -677,6 +677,22 @@ public:
 		}
 	}
 
+	void AthermalRelease()
+	{
+		// Gas is vented by subtracting a fraction of the gas concentration at grain boundaries arrived from diffusion
+		// Bf = Bf - f_ath * dB
+		for (std::vector<System>::size_type i = 0; i != sciantix_system.size(); ++i)
+		{
+			sciantix_variable[sv[sciantix_system[i].getGasName() + " at grain boundary"]].setFinalValue(
+				solver.Integrator(
+					sciantix_variable[sv[sciantix_system[i].getGasName() + " at grain boundary"]].getFinalValue(),
+					- model[sm["Porosity"]].getParameter().at(0),
+					sciantix_variable[sv[sciantix_system[i].getGasName() + " at grain boundary"]].getIncrement()
+				)
+			);
+		}
+	}
+
 	void HighBurnupStructurePorosity()
 	{
 		/// @brief

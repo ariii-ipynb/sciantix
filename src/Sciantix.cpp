@@ -81,6 +81,10 @@ void Sciantix(int Sciantix_options[],
 	MapModel();
 	sciantix_simulation.GasDiffusion();
 
+	Porosity();
+	MapModel();
+	sciantix_simulation.AthermalRelease();
+
 	GrainBoundaryMicroCracking();
 	MapModel();
 	sciantix_simulation.GrainBoundaryMicroCracking();
