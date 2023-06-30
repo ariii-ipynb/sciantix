@@ -90,6 +90,7 @@ public:
 		double solution(0.0);
 		const double pi = CONSTANT_NUMBERS_H::MathConstants::pi;
 
+
 		diffusion_rate_coeff = pow(pi, 2) * parameter.at(1) / pow(parameter.at(2), 2);
 		projection_coeff = -2.0 * sqrt(2.0 / pi);
 		source_rate_coeff = projection_coeff * parameter.at(3);
@@ -139,17 +140,7 @@ public:
 		/// SpectralDiffusionNonEquilibrium
 		/// Solver for the spatially averaged solution of the systems of PDEs:
 		/// |dy1/dt = D div grad y1 - gy1 + by2 + S1 - Ly1
-		/// |dy2/dt = Db div grad y2 + gy1 - by2 + S2 - Ly2
-
-		///           ((D div grad - g - L)                       b )
-		///           (         g             (Db div grad -b - L)   )
-
-		/// |dy1/dt = D  div grad y1 - gy1 + by2 + S1 - Ly1
-		/// |dy2/dt = Db div grad y2 + gy1 - by2 + S2 - Ly2
-
-		///           ((D div grad - g - L)                       b )
-		///           (         g             (Db div grad -b - L)   )
-
+		/// |dy2/dt = 0             + gy1 - by2 + S2 - Ly2
 		/// We apply a spectral approach in space, projecting the equation on the eigenfunctions of the laplacian operator.
 		/// We use the first order backward Euler solver in time.
 		/// The number of terms in the expansion, N, is fixed a priori.
@@ -162,14 +153,11 @@ public:
 		//               domain_radius 
 		//               source_term 
 		//               source_term_bubbles
-		//							 bubble_diffusivity
 
 		unsigned short int n(0);
 		unsigned short int np1(1);
 
-		double bubble_diffusion_rate(0.0);
 		double diffusion_rate_coeff(0.0);
-		double bubble_diffusion_rate_coeff(0.0);
 		double diffusion_rate(0.0);
 		double source_rate_coeff_solution(0.0);
 		double source_rate_coeff_bubbles(0.0);
@@ -183,7 +171,6 @@ public:
 		const double pi = CONSTANT_NUMBERS_H::MathConstants::pi;
 
 		diffusion_rate_coeff = pow(pi, 2) * parameter.at(1) / pow(parameter.at(5), 2); // pi^2 * D / a^2
-		bubble_diffusion_rate_coeff =  pow(pi, 2) * parameter.at(8) / pow(parameter.at(5), 2); // pi^2 * Db / a^2
 		projection_coeff = -2.0 * sqrt(2.0 / pi);
 		source_rate_coeff_solution = projection_coeff * parameter.at(6); // - 2 sqrt(2/pi) * S1
 		source_rate_coeff_bubbles = projection_coeff * parameter.at(7); // - 2 sqrt(2/pi) * S2
@@ -194,14 +181,13 @@ public:
 			const double n_coeff = pow(-1.0, np1) / np1;
 
 			diffusion_rate = diffusion_rate_coeff * pow(np1, 2); // pi^2 * D * n^2 / a^2
-			bubble_diffusion_rate = bubble_diffusion_rate_coeff * pow(np1, 2); // pi^2 * Db * n^2 / a^2
 			source_rate_solution = source_rate_coeff_solution * n_coeff; // - 2 sqrt(2/pi) * S * (-1)^n/n
 			source_rate_bubble = source_rate_coeff_bubbles * n_coeff;
 
 			coeff_matrix[0] = 1.0 + (diffusion_rate + parameter.at(3) + parameter.at(4)) * increment; // 1 + (pi^2 * D * n^2 / a^2 + g + L) dt
 			coeff_matrix[1] = -parameter.at(2) * increment; // - b
 			coeff_matrix[2] = -parameter.at(3) * increment; // - g
-			coeff_matrix[3] = 1.0 + (bubble_diffusion_rate + parameter.at(2) + parameter.at(4)) * increment; // 1 + (pi^2 * Db * n^2 / a^2 + b + L) dt
+			coeff_matrix[3] = 1.0 + (parameter.at(2) + parameter.at(4)) * increment; // 1 + (b + L) dt
 			initial_conditions[0] = initial_condition_gas_solution[n] + source_rate_solution * increment;
 			initial_conditions[1] = initial_condition_gas_bubble[n] + source_rate_bubble * increment;
 
@@ -277,115 +263,6 @@ public:
     }
     return y1;
   }
-
-	void modeInitialization(int n_modes, double mode_initial_condition, double* diffusion_modes)
-	{
-		const double pi = CONSTANT_NUMBERS_H::MathConstants::pi;
-
-		// projection on diffusion modes of the initial conditions
-		double initial_condition(0.0);
-		double projection_remainder(0.0);
-		double reconstructed_solution(0.0);
-		int iteration(0), iteration_max(20), n(0), np1(1);
-		double projection_coeff(0.0);
-		projection_coeff = -sqrt(8.0 / pi);
-
-		initial_condition = mode_initial_condition;
-
-		projection_remainder = initial_condition;
-		for (iteration = 0; iteration < iteration_max; ++iteration)
-		{
-			reconstructed_solution = 0.0;
-			for (n = 0; n < n_modes; ++n)
-			{
-				np1 = n + 1;
-				const double n_coeff = pow(-1.0, np1) / np1;
-				diffusion_modes[n] += projection_coeff * n_coeff * projection_remainder;
-				reconstructed_solution += projection_coeff * n_coeff * diffusion_modes[n] * 3.0 / (4.0 * pi);
-			}
-			projection_remainder = initial_condition - reconstructed_solution;
-		}
-	}
-
-  double NewtonBlackburn(std::vector<double> parameter)
-  {
-		/**
-		 * @brief Solver for the non-linear equation (Blackburn's thermochemical urania model) log(PO2(x)) = 2.0*log(x*(x+2.0)/(1.0-x)) + 108.0*pow(x,2.0) - 32700.0/T + 9.92
-		 * with the iterative Newton's method.
-		 * 
-		 */
-
-    double fun(0.0);
-    double deriv(0.0);
-    double x1(0.0);
-    unsigned short int iter(0);
-    const double tol(1.0e-3);
-    const unsigned short int max_iter(50);
-    
-	  double a = parameter.at(0);
-	  double b = parameter.at(1);
-	  double c = log(parameter.at(2));
-
-    if(parameter.at(2)==0)
-			std::cout << "Warning: check NewtonBlackburn solver!" << std::endl;
-    
-		if(a == 0.0)
-    {
-      a = 1.0e-7;
-    } 
-
-    while (iter < max_iter)
-    {
-      fun =  2.0*log(a*(a+2.0)/(1.0-a)) + 108.0*pow(a,2.0) - 32700.0/b + 9.92 - c;
-
-      deriv = 216.0*a + 2.0*(pow(a,2.0)-2.0*a-2.0)/((a-1.0)*a*(2.0+a));
-
-      x1 = a - fun/deriv;
-      a = x1;
-
-      if(abs(fun)<tol) return x1;
-
-      iter++;
-    }
-    return x1;
-  }
-
-	double NewtonLangmuirBasedModel(double initial_value, std::vector<double> parameter, double increment)
-	{
-		/// Solver for the ODE [y' = K(1-beta*exp(alpha*x)))]
-		/// @param parameter[0] = K
-		/// @param parameter[1] = beta
-		/// @param parameter[2] = alpha
-
-		double K = parameter.at(0);
-		double beta = parameter.at(1);
-		double alpha = parameter.at(2);
-		double x0 = initial_value;
-		double x00 = initial_value;
-
-    double fun(0.0);
-    double deriv(0.0);
-    double x1(0.0);
-    unsigned short int iter(0);
-    const double tol(1.0e-3);
-    const unsigned short int max_iter(50);
-
-    while (iter < max_iter)
-    {
-      fun = x0 - x00 - K * increment + K * beta * exp(alpha * x0) * increment;
-
-      deriv = 1.0 + K * beta * alpha * exp(alpha * x0) * increment;
-
-      x1 = x0 - fun/deriv;
-      x0 = x1;
-
-      if(abs(fun)<tol) return x1;
-
-      iter++;
-    }
-    return x1;
-	}
-
 
 	Solver() {}
 	~Solver() {}

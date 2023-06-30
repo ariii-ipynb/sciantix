@@ -33,7 +33,7 @@ void UO2()
 	matrix[index].setSurfaceTension(0.7); // (N/m)
 	matrix[index].setFFinfluenceRadius(1.0e-9); // (m)
 	matrix[index].setFFrange(6.0e-6); // (m)
-	matrix[index].setSchottkyVolume(4.09e-29);
+	matrix[index].setSchottkyVolume(4.093e-29);
 	matrix[index].setOIS(7.8e-30); // (m3)
 	matrix[index].setSemidihedralAngle(0.872664626); // (rad)
 	matrix[index].setGrainBoundaryThickness(5.0e-10); // (m)
@@ -41,4 +41,6 @@ void UO2()
 	matrix[index].setGrainRadius(sciantix_variable[sv["Grain radius"]].getFinalValue()); // (m)
 	matrix[index].setHealingTemperatureThreshold(1273.5); // K
 	matrix[index].setGrainBoundaryVacancyDiffusivity(int(input_variable[iv["iGrainBoundaryVacancyDiffusivity"]].getValue())); // (m2/s)
+	matrix[index].setPorosity(sciantix_variable[sv["Porosity"]].getFinalValue());
+	matrix[index].setSolidDensity(sciantix_variable[sv["Solid density"]].getFinalValue());
 }

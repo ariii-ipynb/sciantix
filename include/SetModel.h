@@ -44,9 +44,8 @@
 #include "GrainBoundaryMicroCracking.h"
 #include "GrainBoundaryVenting.h"
 #include "HighBurnupStructureFormation.h"
-#include "StoichiometryDeviation.h"
-#include "EnvironmentComposition.h"
-#include "UO2Thermochemistry.h"
+#include "Porosity.h"
+#include "SolidSwelling.h"
 
 #include "ErrorMessages.h"
 

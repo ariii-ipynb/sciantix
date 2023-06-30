@@ -10,14 +10,13 @@
 //                                                                                  //
 //  Version: 2.0                                                                    //
 //  Year: 2022                                                                      //
-//  Authors: G. Zullo, G. Petrosillo                                                //
+//  Authors: D. Pizzocri, G. Zullo, A. Pagani                                       //
 //                                                                                  //
 //////////////////////////////////////////////////////////////////////////////////////
 
-#include "SciantixVariableDeclaration.h"
-#include "HistoryVariableDeclaration.h"
 #include "ModelDeclaration.h"
+#include "SciantixVariableDeclaration.h"
 #include "MapSciantixVariable.h"
-#include "MapHistoryVariable.h"
+#include "ConstantNumbers.h"
 
-void EnvironmentComposition( );
+void SolidSwelling();
