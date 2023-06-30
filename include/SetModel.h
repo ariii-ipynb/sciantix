@@ -46,6 +46,7 @@
 #include "EnvironmentComposition.h"
 #include "UO2Thermochemistry.h"
 #include "Porosity.h"
+#include "SolidSwelling.h"
 #include "ErrorMessages.h"
 #include <iostream>
 #include <cmath>

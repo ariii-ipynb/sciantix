@@ -680,7 +680,7 @@ public:
 	void AthermalRelease()
 	{
 
-		if (!input_variable[iv["iAthermalRelease"]].getValue()) return;
+		if (!input_variable[iv["iPorosity"]].getValue()) return;
 
 		// Gas is vented by subtracting a fraction of the gas concentration at grain boundaries arrived from diffusion
 		// Bf = Bf - f_ath * dB
@@ -694,6 +694,22 @@ public:
 				)
 			);
 		}
+	}
+
+	void SolidSwelling()
+	{
+		sciantix_variable[sv["Solid swelling"]].setFinalValue(
+			sciantix_variable[sv["FIMA"]].getFinalValue() * model[sm["Solid swelling"]].getParameter().at(0) / 100
+		);
+
+		sciantix_variable[sv["Xe solid swelling"]].setFinalValue(
+			sciantix_variable[sv["Xe in intragranular solution"]].getFinalValue() / (sciantix_variable[sv["U"]].getFinalValue()) * 1.072
+		);
+
+		sciantix_variable[sv["Solid density"]].setFinalValue(
+			matrix[0].getTheoreticalDensity() / 
+			(1.0 + sciantix_variable[sv["Solid swelling"]].getFinalValue() + sciantix_variable[sv["Xe solid swelling"]].getFinalValue())
+		);
 	}
 
 	void HighBurnupStructurePorosity()

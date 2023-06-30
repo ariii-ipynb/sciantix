@@ -81,6 +81,9 @@ void Sciantix(int Sciantix_options[],
 	MapModel();
 	sciantix_simulation.GasDiffusion();
 
+	SolidSwelling();
+	sciantix_simulation.SolidSwelling();
+
 	Porosity();
 	MapModel();
 	sciantix_simulation.AthermalRelease();

@@ -150,7 +150,7 @@ void SetVariables(int Sciantix_options[], double Sciantix_history[], double Scia
 		++iv_counter;
 
 		input_variable.emplace_back();
-		input_variable[iv_counter].setName("iAthermalRelease");
+		input_variable[iv_counter].setName("iPorosity");
 		input_variable[iv_counter].setValue(Sciantix_options[23]);
 		++iv_counter;
 	}
@@ -790,7 +790,15 @@ void SetVariables(int Sciantix_options[], double Sciantix_history[], double Scia
 	sciantix_variable[sv_counter].setUOM("(kg/m3)");
 	sciantix_variable[sv_counter].setInitialValue(Sciantix_variables[40]);
 	sciantix_variable[sv_counter].setFinalValue(Sciantix_variables[40]);
-	sciantix_variable[sv_counter].setOutput(toOutputHighBurnupStructureFormation);
+	sciantix_variable[sv_counter].setOutput(1);
+	++sv_counter;
+
+	sciantix_variable.emplace_back();
+	sciantix_variable[sv_counter].setName("Solid density");
+	sciantix_variable[sv_counter].setUOM("(kg/m3)");
+	sciantix_variable[sv_counter].setInitialValue(0.0);
+	sciantix_variable[sv_counter].setFinalValue(0.0);
+	sciantix_variable[sv_counter].setOutput(1);
 	++sv_counter;
 
 	sciantix_variable.emplace_back();
@@ -951,6 +959,22 @@ void SetVariables(int Sciantix_options[], double Sciantix_history[], double Scia
 	sciantix_variable[sv_counter].setInitialValue(0.0);
 	sciantix_variable[sv_counter].setFinalValue(0.0);
 	sciantix_variable[sv_counter].setOutput(0);
+	++sv_counter;
+
+	sciantix_variable.emplace_back();
+	sciantix_variable[sv_counter].setName("Solid swelling");
+	sciantix_variable[sv_counter].setUOM("(/)");
+	sciantix_variable[sv_counter].setInitialValue(0.0);
+	sciantix_variable[sv_counter].setFinalValue(0.0);
+	sciantix_variable[sv_counter].setOutput(1);
+	++sv_counter;
+
+	sciantix_variable.emplace_back();
+	sciantix_variable[sv_counter].setName("Xe solid swelling");
+	sciantix_variable[sv_counter].setUOM("(/)");
+	sciantix_variable[sv_counter].setInitialValue(0.0);
+	sciantix_variable[sv_counter].setFinalValue(0.0);
+	sciantix_variable[sv_counter].setOutput(1);
 	++sv_counter;
 
 	// ---------------

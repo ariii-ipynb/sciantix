@@ -30,7 +30,7 @@ void Porosity()
 	 * 
 	 */
 
-	// if (!input_variable[iv["iAthermalRelease"]].getValue()) return;
+	// if (!input_variable[iv["iPorosity"]].getValue()) return;
 
 	model.emplace_back();
 	int model_index = int(model.size()) - 1;
