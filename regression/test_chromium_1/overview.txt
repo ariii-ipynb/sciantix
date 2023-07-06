@@ -11,7 +11,7 @@ Model #9: 	Grain-boundary micro-cracking	from Barani et al. (2017), JNM
 Model #10: 	Grain-boundary venting	not considered.
 Model #11: 	Intergranular bubble evolution	: Pastore et al., NED, 256 (2013) 75-86.
 Model #12: 	Microstructure	T. Cardinaels et al., JNM, 424 (2012) 252-260.
-Model #13: 	Chromium solubility	Ch. Riglet-Martial et al., JNM, 447 (2014) 63-72.
+Model #13: 	Chromium solubility	Riglet-Martial et al., JNM, 447 (2014) 63-72.
 
 Matrix #0: 	UO2Cr	
 	Ainscough et al., JNM, 49 (1973) 117-128.

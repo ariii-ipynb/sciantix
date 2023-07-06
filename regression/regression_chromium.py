@@ -73,20 +73,22 @@ def do_gold():
     print(f"output.txt not found in {file}")
 
 # Plot the regression test results
-def do_plot(chromiumRigletMartialdata1, temperature, temperatureG, Chromium, ChromiumG):
+def do_plot(exp_data, data_x, data_y, data_gx, data_gy):
 
   fig, ax = plt.subplots()
 
-  ax.scatter(chromiumRigletMartialdata1[:,0], chromiumRigletMartialdata1[:,1], c = '#C9C954', edgecolors= '#999AA2', marker = 'o', s=20, label='Riglet-Martial data')
-  ax.scatter(temperature, Chromium, c = '#98E18D', edgecolors= '#999AA2', marker = 'o', s=20, label='SCIANTIX 2.0')
-  ax.scatter(temperatureG, ChromiumG, c = '#98E18D', edgecolors= '#999AA2', marker = 'o', s=20, label='SCIANTIX 2.0')
+  ax.scatter(exp_data[:,1], exp_data[:,0], c = '#C7C924', edgecolors= '#999AA2', marker = 'o', s=20, label='Riglet-Martial data')
+  ax.scatter(data_x, data_y, c = '#98E18D', edgecolors= '#999AA2', marker = 'o', s=20, label='SCIANTIX 2.0')
+  ax.scatter(data_gx, data_gy, c = '#65E13D', edgecolors= '#999AA2', marker = 'o', s=20, label='SCIANTIX 2.0 - Gold')
 
   # ax.plot([1e-3, 1e2],[1e-3, 1e2], '-', color = '#757575')
   # ax.plot([1e-3, 1e2],[2e-3, 2e2],'--', color = '#757575')
   # ax.plot([1e-3, 1e2],[5e-4, 5e1],'--', color = '#757575')
 
-  ax.set_xlim(0, 2.5e3)
-  ax.set_ylim(0, 1e25)
+  # ax.set_xlim(0, 2.5e3)
+  # ax.set_ylim(0, 1e25)
+
+  # ax.set_yscale("log")
 
   # ax.set_title('Intergranular gaseous swelling')
   ax.set_xlabel('Temperature (K)')
@@ -119,7 +121,6 @@ def regression_chromium(wpath, mode_chromium, mode_gold, mode_plot, folderList, 
 
       print(f"Now in folder {file}...")
       number_of_tests += 1
-
 
       # mode_gold = 0 : Use SCIANTIX / Don't use GOLD and check result
       if mode_gold == 0:
