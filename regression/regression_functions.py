@@ -28,6 +28,16 @@ def findSciantixVariablePosition(output, variable_name):
   i,j = np.where(output == variable_name)
   return int(j)
 
+def getSciantixVariable(output, variable_name):
+  """
+  This function gets the output.txt file and the variable name,
+  giving back its column index in the ndarray
+  """
+  pos = findSciantixVariablePosition(output, variable_name)
+  data_array = output[1:,pos].astype(float)
+
+  return data_array
+
 def plot(x, y):
     """
     Parameters

@@ -46,13 +46,16 @@ void ChromiumSolubility()
 	// Solubility of Chromium is evaluated as log10(y_Cr) = p*log10(P_O2) + V + U/T
 	// Coefficients U and V came from experimental fitting, in this way the Gibbs Potential is approximated as a function of 1/T
 	// Metallic chromium shows two different phases with threshold temperature of 1651 °C
-	// CrO is expected to be negligible, accordingly to CrO phase diagram
+	// CrO is expected to be negligible, accordingly to Cr - O phase diagram
+	// The exchange between Cr-metal phase and Cr-oxide phase is described accordingly to the empirical expression:
+	// oxide_fraction  = 1 - exp(C1 * T - C1*C2)
 
+	// Values for  metal phase
 	double V_coeff_Cr_ht;
 	double V_coeff_Cr_lt;
 	double U_coeff_Cr_ht; 
    	double U_coeff_Cr_lt; 
-	double threshold_temp; 
+	double threshold_temp ; 
 	double end_temp;
 
 	double C1;
@@ -78,6 +81,8 @@ void ChromiumSolubility()
 			C1 = 0.005;
 			C2 = 1800;
 
+			break;
+
 		} 
 
 		case 1:
@@ -90,11 +95,13 @@ void ChromiumSolubility()
     		V_coeff_Cr_lt = -5.948346054563108;
    			U_coeff_Cr_lt =  22989.0;
 
-			threshold_temp = 4000; //(K)
+			threshold_temp = 5000; //(K)
 			end_temp = 1721.2193652656406; //(K)
 
 			C1 = 0.0017215611636416032;
-			C2 = 1501.8547191537048;
+			C2 = 1501.8547191537048 + 273.15;
+
+			break;
 
 		}
 
@@ -109,16 +116,19 @@ void ChromiumSolubility()
 			V_coeff_Cr_lt = 0;
    			U_coeff_Cr_lt = 0;
 
-			threshold_temp = 4000; //(K)
+			threshold_temp = 5000; //(K)
 			end_temp = 0; //(K)
 
 			C1 = 0;
 			C2 = 0;
 
-		}
+			break;
 
 		}
 
+		}
+
+	// Values for ocìxide phase
     const double V_coeff_Cr2O3 =  0.1385; 
     const double U_coeff_Cr2O3 = -0.4827e+4;
     
@@ -159,7 +169,7 @@ void ChromiumSolubility()
 		Cr2O3_solubility = 100*Cr2O3_solubility * PhysicsConstants::molar_mass_Chromium / ((1-Cr2O3_solubility)*molar_mass_Uranium + Cr2O3_solubility * PhysicsConstants::molar_mass_Chromium + 2* PhysicsConstants::molar_mass_Oxigen ); //(% weight Cr /UO2)
 	}
 
-	// Calculations to get the amount of Cr in atoms
+	// Calculations to get the amount of Cr in weight %
 
 	double U_content = sciantix_variable[sv["U234"]].getFinalValue() + sciantix_variable[sv["U235"]].getFinalValue() +sciantix_variable[sv["U236"]].getFinalValue() +
 					   sciantix_variable[sv["U237"]].getFinalValue() + sciantix_variable[sv["U238"]].getFinalValue(); // (at U/m3)
@@ -169,7 +179,7 @@ void ChromiumSolubility()
 	double UO2_weight = U_weight + O2_weight; //(g UO2/m3)
 
 	double Cr_weight = UO2_weight*sciantix_variable[sv["Chromium content"]].getFinalValue()*1e-6; //(g Cr/m3)
-	double Cr_atoms = Cr_weight*PhysicsConstants::avogadro_number/PhysicsConstants::molar_mass_Chromium; //(atoms Cr/m3)
+	Cr_weight = 100*Cr_weight/UO2_weight; //(% weight Cr /UO2)
 
 	// Anatilitical formulation of the ration between Cr203 and Cr-metal in the fuel 
 
@@ -194,28 +204,34 @@ void ChromiumSolubility()
 		Cr_fraction = 1;
 	}
 
-	// Evaluations of number of Chromium atoms in metal-oxide compounds
+	// Routine to set the amount of cromium in solution/precipitate for each phase
 
-	double Cr_metal = Cr_atoms*Cr_fraction; //(atoms Cr/m3)
-	double Cr_oxide = Cr_atoms*Cr203_fraction; //(atoms Cr/m3)
+	double Cr_solution; 										//(% weight Cr /UO2)
+	double Cr_precipitate; 										//(% weight Cr /UO2)
+	double Cr203_solution = Cr_weight*Cr203_fraction; 			//(% weight Cr /UO2)
+	double Cr2O3_precipitate = 0; 								//(% weight Cr /UO2)
 
-	double Cr_solution = U_weight*Cr_solubility/100; //(g Cr/m3)
-	Cr_solution = Cr_solution*PhysicsConstants::avogadro_number/PhysicsConstants::molar_mass_Chromium; //(at Cr/m3)
-	double Cr_precipitate = 0; // (at Cr/m3)
-
-	if (Cr_solution > Cr_metal)
-		Cr_solution = Cr_metal;
+	if (Cr_solubility >= Cr_weight*Cr_fraction)
+	{
+		Cr_solution = Cr_weight*Cr_fraction;
+		Cr_precipitate = 0;
+	}		
+	else 
+	{
+		Cr_solution = Cr_solubility;
+		Cr_precipitate = Cr_weight*Cr_fraction - Cr_solution;
+	}
+		
+	if (Cr2O3_solubility >= Cr_weight*Cr203_fraction)
+	{
+		Cr203_solution = Cr_weight*Cr203_fraction;
+		Cr2O3_precipitate = 0;
+	}	
 	else
-		Cr_precipitate = Cr_metal - Cr_solution;
-
-	double Cr203_solution = U_weight*Cr2O3_solubility/100; //(g Cr/m3)
-	Cr203_solution = Cr203_solution*PhysicsConstants::avogadro_number/PhysicsConstants::molar_mass_Chromium; //(at Cr/m3)
-	double Cr2O3_precipitate = 0; // (at Cr/m3)
-
-	if (Cr203_solution > Cr_oxide)
-		Cr203_solution = Cr_oxide;
-	else
-		Cr2O3_precipitate = Cr_oxide - Cr203_solution;
+	{
+		Cr203_solution = Cr2O3_solubility;
+		Cr2O3_precipitate = Cr_weight*Cr203_fraction - Cr203_solution;
+	}
 		
 	parameter.push_back(Cr_precipitate);
 	parameter.push_back(Cr_solution);
@@ -229,12 +245,12 @@ void ChromiumSolubility()
 	sciantix_variable[sv["Chromium precipitate"]].setFinalValue(Cr_precipitate);
 	sciantix_variable[sv["Chromia solution"]].setFinalValue(Cr203_solution);
 	sciantix_variable[sv["Chromia precipitate"]].setFinalValue(Cr2O3_precipitate);
-	matrix[sma["UO2Cr"]].setChromiumSolubility(Cr_solubility);
-	matrix[sma["UO2Cr"]].setChromiaSolubility(Cr2O3_solubility);
-	matrix[sma["UO2Cr"]].setChromiumSolution(Cr_solution);
-	matrix[sma["UO2Cr"]].setChromiumPrecipitate(Cr_precipitate);
-	matrix[sma["UO2Cr"]].setChromiaSolution(Cr203_solution);
-	matrix[sma["UO2Cr"]].setChromiaPrecipitate(Cr2O3_precipitate);
+	matrix[0].setChromiumSolubility(Cr_solubility);
+	matrix[0].setChromiaSolubility(Cr2O3_solubility);
+	matrix[0].setChromiumSolution(Cr_solution);
+	matrix[0].setChromiumPrecipitate(Cr_precipitate);
+	matrix[0].setChromiaSolution(Cr203_solution);
+	matrix[0].setChromiaPrecipitate(Cr2O3_precipitate);
 
 
 	model[model_index].setRef(reference);

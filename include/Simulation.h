@@ -129,8 +129,8 @@ public:
 			sciantix_variable[sv[sciantix_system[i].getGasName() + " produced"]].setFinalValue(
 				solver.Integrator(
 					sciantix_variable[sv[sciantix_system[i].getGasName() + " produced"]].getInitialValue(),
-					model[sm["Gas production - " + sciantix_system[i].getGasName() + " in " + matrix[0].getName()]].getParameter().at(0),
-					model[sm["Gas production - " + sciantix_system[i].getGasName() + " in " + matrix[0].getName()]].getParameter().at(1)
+					model[sm["Gas production - " + sciantix_system[i].getName() ]].getParameter().at(0),
+					model[sm["Gas production - " + sciantix_system[i].getName() ]].getParameter().at(1)
 				)
 			);
 		}

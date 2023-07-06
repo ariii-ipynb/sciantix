@@ -18,6 +18,7 @@ from regression_white import regression_white
 from regression_talip import regression_talip
 from regression_contact import regression_contact
 from regression_oxidation import regression_oxidation
+from regression_chromium import regression_chromium
 
 
 # The function `remove_output` is used to remove an existing output file (output.txt) from a specified folder
@@ -43,11 +44,11 @@ def main():
 
     # Initialize different variables needed for the execution :
     # - A list 'folderList' to store the names of every test that will be executed. Different variations of this list are initialized for different test types.
-    folderList = folderListB = folderListW = folderListT = folderListC = folderListO = []
+    folderList = folderListB = folderListW = folderListT = folderListC = folderListO = folderListR = []
     # - Variables to count the number of executed tests. Different counts are maintained for different test types.
-    number_of_tests = number_of_tests_b = number_of_tests_w = number_of_tests_t = number_of_tests_c = number_of_tests_o = 0
+    number_of_tests = number_of_tests_b = number_of_tests_w = number_of_tests_t = number_of_tests_c = number_of_tests_o = number_of_tests_r = 0
     # - Variables to count the number of failed tests. Different counts are maintained for different test types.
-    number_of_tests_failed = number_of_tests_failed_b = number_of_tests_failed_w = number_of_tests_failed_t = number_of_tests_failed_c = number_of_tests_failed_o = 0
+    number_of_tests_failed = number_of_tests_failed_b = number_of_tests_failed_w = number_of_tests_failed_t = number_of_tests_failed_c = number_of_tests_failed_o = number_of_tests_failed_r = 0
 
     # If the environment variable 'GITHUB_ACTIONS' is set to 'true', this means the script is running in a GitHub Actions environment.
     # In this case, specific versions of the variables are set for the pipeline environment with default values.
@@ -61,6 +62,7 @@ def main():
         mode_Talip = 1
         mode_CONTACT = 1
         mode_oxidation = 1
+        mode_chromium = 1
         # Set the test condition to '0' or '1'
         test_condition = 1
 
@@ -70,13 +72,14 @@ def main():
         folderListT, number_of_tests_t, number_of_tests_failed_t = regression_talip(wpath, mode_Talip, mode_gold, mode_plot, folderList, number_of_tests, number_of_tests_failed)
         folderListC, number_of_tests_c, number_of_tests_failed_c = regression_contact(wpath, mode_CONTACT, mode_gold, mode_plot, folderList, number_of_tests, number_of_tests_failed)
         folderListO, number_of_tests_o, number_of_tests_failed_o = regression_oxidation(wpath, mode_oxidation, mode_gold, mode_plot, folderList, number_of_tests, number_of_tests_failed)
+        folderListR, number_of_tests_r, number_of_tests_failed_r = regression_chromium(wpath, mode_oxidation, mode_gold, mode_plot, folderList, number_of_tests, number_of_tests_failed)
 
         # Combine the test lists from the different modes into one comprehensive list.
-        folderList = folderListB + folderListW + folderListT + folderListC + folderListO
+        folderList = folderListB + folderListW + folderListT + folderListC + folderListO + folderListR
         # Add up the counts of the executed tests from the different modes.
-        number_of_tests = number_of_tests_b + number_of_tests_w + number_of_tests_t + number_of_tests_c + number_of_tests_o
+        number_of_tests = number_of_tests_b + number_of_tests_w + number_of_tests_t + number_of_tests_c + number_of_tests_o + number_of_tests_r
         # Add up the counts of the failed tests from the different modes.
-        number_of_tests_failed = number_of_tests_failed_b + number_of_tests_failed_w + number_of_tests_failed_t + number_of_tests_failed_c + number_of_tests_failed_o
+        number_of_tests_failed = number_of_tests_failed_b + number_of_tests_failed_w + number_of_tests_failed_t + number_of_tests_failed_c + number_of_tests_failed_o + number_of_tests_failed_r
 
 
 
@@ -106,6 +109,8 @@ def main():
                     remove_output(file)
                 if "oxidation" in file and os.path.isdir(file) is True:
                     remove_output(file)
+                if "chromium" in file and os.path.isdir(file) is True:
+                    remove_output(file)
                 # Set the gold mode and plot mode to '-1'. This means these modes are not in use when removing output files.
                 mode_gold = -1
                 mode_plot = -1
@@ -119,6 +124,7 @@ def main():
             mode_Talip = 1
             mode_CONTACT = 1
             mode_oxidation = 1
+            mode_chromium = 1
 
             # Ask the user to choose an option for the gold mode.
             print("Pleast select one option for the GOLD MODE :\n")
@@ -139,23 +145,24 @@ def main():
             folderListT, number_of_tests_t, number_of_tests_failed_t = regression_talip(wpath, mode_Talip, mode_gold, mode_plot, folderList, number_of_tests, number_of_tests_failed)
             folderListC, number_of_tests_c, number_of_tests_failed_c = regression_contact(wpath, mode_CONTACT, mode_gold, mode_plot, folderList, number_of_tests, number_of_tests_failed)
             folderListO, number_of_tests_o, number_of_tests_failed_o = regression_oxidation(wpath, mode_oxidation, mode_gold, mode_plot, folderList, number_of_tests, number_of_tests_failed)
+            folderListR, number_of_tests_r, number_of_tests_failed_r = regression_chromium(wpath, mode_chromium, mode_gold, mode_plot, folderList, number_of_tests, number_of_tests_failed)
 
             # Combine the test lists from the different modes into one comprehensive list.
-            folderList = folderListB + folderListW + folderListT + folderListC + folderListO
+            folderList = folderListB + folderListW + folderListT + folderListC + folderListO + folderListR
             # Add up the counts of the executed tests from the different modes.
-            number_of_tests = number_of_tests_b + number_of_tests_w + number_of_tests_t + number_of_tests_c + number_of_tests_o
+            number_of_tests = number_of_tests_b + number_of_tests_w + number_of_tests_t + number_of_tests_c + number_of_tests_o + number_of_tests_r
             # Add up the counts of the failed tests from the different modes.
-            number_of_tests_failed = number_of_tests_failed_b + number_of_tests_failed_w + number_of_tests_failed_t + number_of_tests_failed_c + number_of_tests_failed_o
+            number_of_tests_failed = number_of_tests_failed_b + number_of_tests_failed_w + number_of_tests_failed_t + number_of_tests_failed_c + number_of_tests_failed_o + number_of_tests_failed_r
 
         # Case where the user chose values
         if execution_option == 1 :
 
             # Provide options for the user to choose the type of regression test.
             print("Possible regression options \n")
-            print("Baker : 0\nWhite : 1\nTalip : 2\nContact : 3\nOxidation : 4\n")
+            print("Baker : 0\nWhite : 1\nTalip : 2\nContact : 3\nOxidation : 4\nCromium : 5\n")
 
             # Take the user's input for the regression type.
-            regression_mode = int(input("Enter the chosen regression (0, 1, 2, 3, 4) = "))
+            regression_mode = int(input("Enter the chosen regression (0, 1, 2, 3, 4, 5) = "))
 
             # Ask the user to choose an option for the gold mode.
             print("Pleast select one option for the GOLD MODE :\n")
@@ -191,6 +198,10 @@ def main():
                 mode_oxidation = 1
                 folderList, number_of_tests, number_of_tests_failed = regression_oxidation(wpath, mode_oxidation, mode_gold, mode_plot, folderList, number_of_tests, number_of_tests_failed)
                 print("\nRegression selected : Oxidation")
+            if regression_mode == 5 :
+                mode_chromium = 1
+                folderList, number_of_tests, number_of_tests_failed = regression_chromium(wpath, mode_chromium, mode_gold, mode_plot, folderList, number_of_tests, number_of_tests_failed)
+                print("\nRegression selected : Chromium")
 
 
     print("MODE GOLD ==", mode_gold, "selected.")

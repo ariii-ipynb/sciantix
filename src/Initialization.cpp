@@ -61,7 +61,7 @@ void Initialization()
 	Sciantix_variables[74] = 0; // Cr2O3 solubility
 	Sciantix_variables[75] = 0; // Chromium solution
 	Sciantix_variables[76] = 0; // Chromium precipitate
-	Sciantix_variables[77] = 0; // Chromia precipitate
+	Sciantix_variables[77] = 0; // Chromia solution
 	Sciantix_variables[78] = 0; // Chromia precipitate
 
 	// projection on diffusion modes of the initial conditions

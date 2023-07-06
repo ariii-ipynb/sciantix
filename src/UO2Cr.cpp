@@ -26,7 +26,7 @@ void UO2Cr()
 	matrix.emplace_back();
 	int index = int(matrix.size()) - 1;
 
-	matrix[index].setName("UO2CR");
+	matrix[index].setName("UO2Cr");
 	matrix[index].setRef("\n\t");	
 	matrix[index].setGrainBoundaryMobility(int(input_variable[iv["iGrainGrowth"]].getValue()));
 	matrix[index].setSurfaceTension(0.7); // (N/m)

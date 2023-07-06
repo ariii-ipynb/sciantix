@@ -58,8 +58,8 @@ void Microstructure()
 	model[model_index].setRef(reference);
 	sciantix_variable[sv["Lattice parameter"]].setFinalValue(lattice_parameter);
 	sciantix_variable[sv["Theoretical density"]].setFinalValue(theoretical_density);
-	matrix[sma["UO2CR"]].setLatticeParameter(lattice_parameter);
-	matrix[sma["UO2CR"]].setTheoreticalDensity(theoretical_density);
+	matrix[0].setLatticeParameter(lattice_parameter);
+	matrix[0].setTheoreticalDensity(theoretical_density);
 
 }
 
