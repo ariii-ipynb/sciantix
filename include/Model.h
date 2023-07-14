@@ -37,6 +37,8 @@ class Model : public HistoryVariable, public SciantixVariable, public InputVaria
 protected:
 	std::string overview;
 	std::vector<double> parameter;
+	std::vector<double> parameter_ranking;
+	double model_ranking;
 
 public:
 
@@ -48,6 +50,26 @@ public:
 	std::vector<double> getParameter()
 	{
 		return parameter;
+	}
+
+	void setParameterRanking(std::vector<double> p)
+	{
+		parameter = p;
+	}
+
+	std::vector<double> getRankingParameter()
+	{
+		return parameter_ranking;
+	}
+
+	void setModelRanking(double a)
+	{
+		model_ranking = a;
+	}
+
+	double getModelRanking()
+	{
+		return model_ranking;
 	}
 
 	// Constructor & destructor

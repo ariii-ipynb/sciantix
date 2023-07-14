@@ -40,7 +40,7 @@ void HighBurnupStructureFormation()
 		///
 		/// This case corresponds to the no HBS forming in the UO2 fuel matrix.
 
-		reference += ": not considered.";
+		reference += ": Not considered";
 		parameter.push_back(0.0);
 		parameter.push_back(0.0);
 

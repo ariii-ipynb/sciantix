@@ -43,7 +43,7 @@ void EffectiveBurnup()
 		parameter.push_back(0.0);
 
 	/// @ref G. Khvostov et al., WRFPM-2005, Kyoto, Japan, 2005
-	reference += ": G. Khvostov et al., WRFPM-2005, Kyoto, Japan, 2005.";
+	reference += ": G. Khvostov et al., WRFPM-2005, Kyoto, Japan, 2005";
 
 	model[model_index].setParameter(parameter);
 	model[model_index].setRef(reference);

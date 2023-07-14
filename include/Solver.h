@@ -307,59 +307,22 @@ public:
 		}
 	}
 
-  double NewtonBlackburn(std::vector<double> parameter)
-  {
+	double NewtonLangmuirBasedModel(double initial_value, std::vector<double> parameter, double increment)
+	{
 		/**
-		 * @brief Solver for the non-linear equation (Blackburn's thermochemical urania model) log(PO2(x)) = 2.0*log(x*(x+2.0)/(1.0-x)) + 108.0*pow(x,2.0) - 32700.0/T + 9.92
-		 * with the iterative Newton's method.
+		 * @brief Solver for dx/dt = A (1 - B * x(2+x)/(1-x) * exp(C * x^2))
+		 * @author G. Zullo
 		 * 
 		 */
 
-    double fun(0.0);
-    double deriv(0.0);
-    double x1(0.0);
-    unsigned short int iter(0);
-    const double tol(1.0e-3);
-    const unsigned short int max_iter(50);
-    
-	  double a = parameter.at(0);
-	  double b = parameter.at(1);
-	  double c = log(parameter.at(2));
+		/// @param parameter[0] = A
+		/// @param parameter[1] = B
+		/// @param parameter[2] = C
 
-    if(parameter.at(2)==0)
-			std::cout << "Warning: check NewtonBlackburn solver!" << std::endl;
-    
-		if(a == 0.0)
-    {
-      a = 1.0e-7;
-    } 
+		double A = parameter.at(0);
+		double B = parameter.at(1);
+		double C = parameter.at(2);
 
-    while (iter < max_iter)
-    {
-      fun =  2.0*log(a*(a+2.0)/(1.0-a)) + 108.0*pow(a,2.0) - 32700.0/b + 9.92 - c;
-
-      deriv = 216.0*a + 2.0*(pow(a,2.0)-2.0*a-2.0)/((a-1.0)*a*(2.0+a));
-
-      x1 = a - fun/deriv;
-      a = x1;
-
-      if(abs(fun)<tol) return x1;
-
-      iter++;
-    }
-    return x1;
-  }
-
-	double NewtonLangmuirBasedModel(double initial_value, std::vector<double> parameter, double increment)
-	{
-		/// Solver for the ODE [y' = K(1-beta*exp(alpha*x)))]
-		/// @param parameter[0] = K
-		/// @param parameter[1] = beta
-		/// @param parameter[2] = alpha
-
-		double K = parameter.at(0);
-		double beta = parameter.at(1);
-		double alpha = parameter.at(2);
 		double x0 = initial_value;
 		double x00 = initial_value;
 
@@ -372,9 +335,8 @@ public:
 
     while (iter < max_iter)
     {
-      fun = x0 - x00 - K * increment + K * beta * exp(alpha * x0) * increment;
-
-      deriv = 1.0 + K * beta * alpha * exp(alpha * x0) * increment;
+      fun = x0 - x00 - A * increment * (1.0 - B * x0*(2.0+x0)/(1.0-x0) * exp(C*pow(x0,2.0)));
+      deriv = 1.0 + A*B*increment*exp(C*pow(x0,2))*(-2.0*C*pow(x0,2.0)*(x0+2.0) / (x0-1.0) - (pow(x0,2.0)-2.0*x0-2.0)*pow(x0-1.0,-2));
 
       x1 = x0 - fun/deriv;
       x0 = x1;

@@ -18,7 +18,7 @@ with open('input_settings.txt', 'w') as file:
     file.write('1\t#\tiGrainBoundaryMicroCracking (0= no model considered, 1= Barani et al. (2017))\n')
     file.write('0\t#\tiFuelMatrix (0= UO2, 1= UO2 + HBS)\n')
     file.write('0\t#\tiGrainBoundaryVenting (0= no model considered, 1= Pizzocri et al., D6.4 (2020), H2020 Project INSPYRE)\n')
-    file.write('0\t#\tiRadioactiveFissionGas (0= not considered)\n')
+    file.write('0\t#\tiRadioactiveFissionGas (0= not in output)\n')
     file.write('0\t#\tiHelium (0= not considered)\n')
     file.write('0\t#\tiHeDiffusivity (0= null value, 1= limited lattice damage, Luzzi et al. (2018), 2= significant lattice damage, Luzzi et al. (2018))\n')
     file.write('0\t#\tiGrainBoundarySweeping (0= no model considered, 1= TRANSURANUS swept volume model)\n')

@@ -36,7 +36,7 @@ void HighBurnupStructurePorosity()
 		/// @brief 
 		/// No HBS case - no evolution of HBS porosity
 
-		reference += "not considered";
+		reference += ": Not considered";
 		parameter.push_back(0.0);
 		sciantix_variable[sv["HBS porosity"]].setInitialValue(0.0);
 		sciantix_variable[sv["HBS porosity"]].setFinalValue(0.0);

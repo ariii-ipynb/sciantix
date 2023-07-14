@@ -42,7 +42,7 @@ void InterGranularBubbleEvolution()
 		parameter.push_back(0.0);
 		parameter.push_back(0.0);
 
-		reference += ": No model for grain-boundary bubble evolution.";
+		reference += ": No grain-boundary bubbles";
 	}
 
 	else if (input_variable[iv["iGrainBoundaryBehaviour"]].getValue() == 1)

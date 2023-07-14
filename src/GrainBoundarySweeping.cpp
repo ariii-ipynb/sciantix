@@ -36,7 +36,7 @@ void GrainBoundarySweeping()
 		std::vector<double> parameter;
 		parameter.push_back(0.0);
 		model[model_index].setParameter(parameter);
-		model[model_index].setRef("Not considered");
+		model[model_index].setRef(": Not considered");
 
 		break;
 	}

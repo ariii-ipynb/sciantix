@@ -63,7 +63,7 @@ void Matrix::setGrainBoundaryMobility(int input_value)
 		 * 
 		*/
 
-		reference += "no grain-boundary mobility.\n\t";
+		reference += ": Null grain-boundary mobility\n\t";
 		grain_boundary_mobility = 0.0;
 
 		break;

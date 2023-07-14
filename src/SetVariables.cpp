@@ -789,6 +789,14 @@ void SetVariables(int Sciantix_options[], double Sciantix_history[], double Scia
 	++sv_counter;
 
 	sciantix_variable.emplace_back();
+	sciantix_variable[sv_counter].setName("Fabrication porosity");
+	sciantix_variable[sv_counter].setUOM("(/)");
+	sciantix_variable[sv_counter].setInitialValue(Sciantix_variables[68]);
+	sciantix_variable[sv_counter].setFinalValue(Sciantix_variables[68]);
+	sciantix_variable[sv_counter].setOutput(0.0);
+	++sv_counter;
+
+	sciantix_variable.emplace_back();
 	sciantix_variable[sv_counter].setName("U");
 	sciantix_variable[sv_counter].setUOM("(at/m3)");
 	sciantix_variable[sv_counter].setInitialValue(Sciantix_variables[41] + Sciantix_variables[42] + Sciantix_variables[43] + Sciantix_variables[44] + Sciantix_variables[45]);
@@ -886,7 +894,7 @@ void SetVariables(int Sciantix_options[], double Sciantix_history[], double Scia
 
 	sciantix_variable.emplace_back();
 	sciantix_variable[sv_counter].setName("Gap oxygen partial pressure");
-	sciantix_variable[sv_counter].setUOM("(MPa)");
+	sciantix_variable[sv_counter].setUOM("(atm)");
 	sciantix_variable[sv_counter].setInitialValue(0.0);
 	sciantix_variable[sv_counter].setFinalValue(0.0);
 	sciantix_variable[sv_counter].setOutput(toOutputStoichiometryDeviation);
@@ -910,7 +918,7 @@ void SetVariables(int Sciantix_options[], double Sciantix_history[], double Scia
 
 	sciantix_variable.emplace_back();
 	sciantix_variable[sv_counter].setName("Fuel oxygen partial pressure");
-	sciantix_variable[sv_counter].setUOM("(MPa)");
+	sciantix_variable[sv_counter].setUOM("(atm)");
 	sciantix_variable[sv_counter].setInitialValue(Sciantix_variables[67]);
 	sciantix_variable[sv_counter].setFinalValue(Sciantix_variables[67]);
 	sciantix_variable[sv_counter].setOutput(toOutputStoichiometryDeviation);

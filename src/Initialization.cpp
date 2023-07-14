@@ -37,9 +37,30 @@ void Initialization()
 	Sciantix_history[10] = Steampressure_input[0];
 
 	// Sciantix_variables initialization
-	Sciantix_variables[25] = 4.0e+13;  // Intergranular_bubble_concentration[0]
-	Sciantix_variables[35] = 0.5;      // Intergranular_saturation_fractional_coverage[0]
-	Sciantix_variables[37] = 1.0;      // Intergranular_fractional_intactness[0]
+	Sciantix_variables[25] = 4.0e+13;  // Intergranular bubble concentration
+	Sciantix_variables[35] = 0.5;      // Intergranular saturation fractional coverage
+	Sciantix_variables[37] = 1.0;      // Intergranular fractional intactness
+
+	// Fabrication fuel density
+	switch (Sciantix_options[11])
+	{
+		case 0: case 1:
+		{
+			Sciantix_variables[40] = 10970.0 * (1.0 - Sciantix_variables[68]);
+
+			break;
+		}
+		
+		default:
+		{
+			std::ofstream Error_log;
+			Error_log.open("error_log.txt", std::ios::out);
+			Error_log << "Error in Initialization.cpp" << std::endl;
+			Error_log << "The input setting iFuelMatrix = " << Sciantix_options[11] << " is out of range." << std::endl;
+			exit(1);
+		}
+			break;
+	}
 
 	// https://pubchem.ncbi.nlm.nih.gov/compound/Uranium-235
 	Sciantix_variables[41] *= Sciantix_variables[40] * 6.022e+24 * 0.8815 / 234.04095; // U-234
@@ -47,9 +68,6 @@ void Initialization()
 	Sciantix_variables[43] *= Sciantix_variables[40] * 6.022e+24 * 0.8815 / 236.04557; // U-236
 	Sciantix_variables[44] *= Sciantix_variables[40] * 6.022e+24 * 0.8815 / 237.04873; // U-237
 	Sciantix_variables[45] *= Sciantix_variables[40] * 6.022e+24 * 0.8815 / 238.05079; // U-238
-
-	// Initial HBS porosity
-	Sciantix_variables[56] = 1.0 - Sciantix_variables[40] / 10970.0;
 
 	// Intragranular similarity ratio
 	Sciantix_variables[64] = 1.0;

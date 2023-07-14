@@ -21,5 +21,3 @@
 #include "MapHistoryVariable.h"
 
 void UO2Thermochemistry();
-
-double BlackburnThermochemicalModel(double stoichiometry_deviation, double temperature);

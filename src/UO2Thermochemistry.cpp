@@ -10,7 +10,7 @@
 //                                                                                  //
 //  Version: 2.0                                                                    //
 //  Year: 2022                                                                      //
-//  Authors: G. Zullo, G. Petrosillo                                                //
+//  Authors: G. Zullo                                                               //
 //                                                                                  //
 //////////////////////////////////////////////////////////////////////////////////////
 
@@ -43,27 +43,50 @@ void UO2Thermochemistry()
   std::vector<double> parameter;
 
   parameter.push_back(sciantix_variable[sv["Stoichiometry deviation"]].getInitialValue());
-  parameter.push_back(history_variable[hv["Temperature"]].getFinalValue()); 
-  parameter.push_back(sciantix_variable[sv["Gap oxygen partial pressure"]].getFinalValue()); // (atm)
 
   model[model_index].setParameter(parameter);
   model[model_index].setRef(reference);
 }
 
-double BlackburnThermochemicalModel(double stoichiometry_deviation, double temperature)
+class OxygenPotentialRepresentation
 {
-  /**
-   * @brief The oxygen partial pressure in UO2+x fuel as a function of x, i.e., PO2 (x) (in atm) is calculated from Blackburn’s relation
-   * @ref Blackburn (1973) J. Nucl. Mater., 46, 244–252.
-   * 
-   * Validity range:
-   * - T: 1000 K - 2670 K
-   * - x: 0 - 0.25
-   */
+  public:
+    double temperature;
+    double oxygen_gap_pressure;
+    double equilibrium_stoichiometry;
 
-  double ln_p = 2.0 * log(stoichiometry_deviation*(2.0+stoichiometry_deviation)/(1.0-stoichiometry_deviation))
-    +	108.0*pow(sciantix_variable[sv["Stoichiometry deviation"]].getFinalValue(),2.0)
-    - 32700.0/temperature + 9.92;
+    double equilibrium_stoichiometry_Blackburn(double temperature, double pressure, double x)
+    {
+      double entropic_coeff = -9.92;
+      double x_coeff = 108;
+      double enthalpic_coeff = -32700;
 
-  return exp(ln_p);
-}
+      double fun(0.0);
+      double deriv(0.0);
+      double x1(0.0);
+      unsigned short int iter(0);
+      const double tol(1.0e-3);
+      const unsigned short int max_iter(50);
+    
+      if(pressure==0)
+	  		std::cout << "Warning: Check equilibrium_stoichiometry_Blackburn!" << std::endl;
+    
+      if(x == 0.0)
+        x = 1.0e-7;
+
+      while (iter < max_iter)
+      {
+        fun =  -entropic_coeff + x_coeff * pow(x, 2) + 2 * log(x * (2 + x) / (1 - x)) + enthalpic_coeff / temperature - log(pressure);
+
+        deriv = x_coeff + 2.0 / x + 2 / (1.0 - x);
+
+        x1 = x - fun/deriv;
+        x = x1;
+
+        if(abs(fun)<tol)
+          return x1;
+
+        iter++;
+      }
+    }
+};

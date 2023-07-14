@@ -735,28 +735,13 @@ public:
 	}
 
 	sciantix_variable[sv["Fuel oxygen partial pressure"]].setFinalValue(
-		BlackburnThermochemicalModel(
+		ThermochemicalModel(
 			sciantix_variable[sv["Stoichiometry deviation"]].getFinalValue(),
 			history_variable[hv["Temperature"]].getFinalValue()
 			)
 		);
  }
-
-  void UO2Thermochemistry()
-  {
-		if (!input_variable[iv["iStoichiometryDeviation"]].getValue()) return;
-
-    if(history_variable[hv["Temperature"]].getFinalValue() < 1000.0 || sciantix_variable[sv["Gap oxygen partial pressure"]].getFinalValue() == 0)
-			sciantix_variable[sv["Equilibrium stoichiometry deviation"]].setFinalValue(0.0);
-
-    else
-      sciantix_variable[sv["Equilibrium stoichiometry deviation"]].setFinalValue(
-        solver.NewtonBlackburn(
-        	model[sm["UO2 thermochemistry"]].getParameter()
-				)
-      );
-	}
-
+ 
 	double* getDiffusionModes(std::string gas_name)
 	{	
 		if(gas_name == "Xe")

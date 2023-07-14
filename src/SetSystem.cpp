@@ -24,58 +24,24 @@ void SetSystem()
 	{
 		case 0: 
 		{
-			for (int k = 0; k < 10; ++k)
-			{
-				switch (k)
-				{
-					case 0:
-					{
-						Xe_in_UO2();
-						MapSystem();
-						
-						break;
-					}
-
-					case 1:
-					{
-						Kr_in_UO2();
-						MapSystem();
-						
-						break;
-					}
-
-					case 2:
-					{
-						He_in_UO2();
-						MapSystem();
-						
-						break;
-					}
-
-					case 3:
-					{
-						Xe133_in_UO2();
-						MapSystem();
-						
-						break;
-					}
-					
-					case 4:
-					{
-						Kr85m_in_UO2();
-						MapSystem();
-						
-						break;
-					}
-
-					default:
-						break;
-				}
-			}
-
+			Xe_in_UO2();
+			MapSystem();
+			
+			Kr_in_UO2();
+			MapSystem();
+			
+			He_in_UO2();
+			MapSystem();
+			
+			Xe133_in_UO2();
+			MapSystem();
+			
+			Kr85m_in_UO2();
+			MapSystem();
+			
 			break;
 		}
-		
+
 		default:
 			break;
 	}
@@ -140,7 +106,7 @@ void System::setFissionGasDiffusivity(int input_value)
 		 * 
 		 */
 		
-		reference += "iFGDiffusionCoefficient: constant diffusivity.\n\t";
+		reference += "iFissionGasDiffusionCoefficient: constant diffusivity\n\t";
 		diffusivity = 7e-19;
 		diffusivity *= sf_diffusivity;
 
@@ -155,7 +121,7 @@ void System::setFissionGasDiffusivity(int input_value)
 		 * 
 		 */
 
-		reference += "iFGDiffusionCoefficient: Turnbull et al (1988), IWGFPT-32, Preston, UK, Sep 18-22.\n\t";
+		reference += "iFissionGasDiffusionCoefficient: Turnbull et al (1988), IWGFPT-32, Preston, UK, Sep 18-22\n\t";
 
 		double temperature = history_variable[hv["Temperature"]].getFinalValue();
 		double fission_rate = history_variable[hv["Fission rate"]].getFinalValue();
@@ -178,7 +144,7 @@ void System::setFissionGasDiffusivity(int input_value)
 		 * 
 		 */
 
-		reference += "iFGDiffusionCoefficient: Matzke (1980), Radiation Effects, 53, 219-242.\n\t";
+		reference += "iFissionGasDiffusionCoefficient: Matzke (1980), Radiation Effects, 53, 219-242\n\t";
 		diffusivity = 5.0e-08 * exp(-40262.0 / history_variable[hv["Temperature"]].getFinalValue());
 		diffusivity *= sf_diffusivity;
 
@@ -193,7 +159,7 @@ void System::setFissionGasDiffusivity(int input_value)
 		 * 
 		 */
 
-		reference += "iFGDiffusionCoefficient: Turnbull et al., (2010), Background and Derivation of ANS-5.4 Standard Fission Product Release Model.\n\t";
+		reference += "iFissionGasDiffusionCoefficient: Turnbull et al., (2010), Background and Derivation of ANS-5.4 Standard Fission Product Release Model\n\t";
 
 		double temperature = history_variable[hv["Temperature"]].getFinalValue();
 		double fission_rate = history_variable[hv["Fission rate"]].getFinalValue();
@@ -216,7 +182,7 @@ void System::setFissionGasDiffusivity(int input_value)
 		 * 
 		 */
 
-		reference += "iFGDiffusionCoefficient: Ronchi, C. High Temp 45, 552-571 (2007).\n\t";
+		reference += "iFissionGasDiffusionCoefficient: Ronchi, C. High Temp 45, 552-571 (2007)\n\t";
 
 		double temperature = history_variable[hv["Temperature"]].getFinalValue();
 		double fission_rate = history_variable[hv["Fission rate"]].getFinalValue();
@@ -241,7 +207,7 @@ void System::setFissionGasDiffusivity(int input_value)
 		diffusivity = 4.5e-42 * history_variable[hv["Fission rate"]].getFinalValue();
 		diffusivity *= sf_diffusivity;
 		
-		reference += "inert fission gases in UO2-HBS.\n\t";
+		reference += "iFissionGasDiffusionCoefficient: Barani et al. Journal of Nuclear Materials 539 (2020) 152296, UO2-HBS\n\t";
 		break;
 	}
 
@@ -267,6 +233,8 @@ void System::setFissionGasDiffusivity(int input_value)
 
 		double d4 = pow(3e-10,2)*1e13*exp(-27800/temperature)*uranium_vacancies;
 
+		reference += "iFissionGasDiffusionCoefficient: \n\t";
+
 		diffusivity = d1 + d2 + d3 + d4;
 
 		diffusivity *= sf_diffusivity;
@@ -282,7 +250,7 @@ void System::setFissionGasDiffusivity(int input_value)
 		 * 
 		 */
 
-		reference += "iFGDiffusionCoefficient: Test case: zero diffusion coefficient.\n\t";
+		reference += "iFGDiffusionCoefficient: Null diffusion coefficient\n\t";
 		diffusivity = 0.0;
 
 		break;
@@ -311,7 +279,7 @@ void System::setHeliumDiffusivity(int input_value)
 		 * 
 		 */
 		
-		reference += "iHeDiffusivity: constant intragranular diffusivity.\n\t";
+		reference += "iHeDiffusivity: Constant intragranular diffusivity\n\t";
 		diffusivity = 7e-19;
 		break;
 	}
@@ -325,7 +293,7 @@ void System::setHeliumDiffusivity(int input_value)
 		 * 
 		 */
 
-		reference += "(no or very limited lattice damage) L. Luzzi et al., Nuclear Engineering and Design, 330 (2018) 265-271.\n\t";
+		reference += "iHeDiffusivity: (no or very limited lattice damage) L. Luzzi et al., Nuclear Engineering and Design, 330 (2018) 265-271\n\t";
 		diffusivity = 2.0e-10 * exp(-24603.4 / history_variable[hv["Temperature"]].getFinalValue());
 		break;
 	}
@@ -339,7 +307,7 @@ void System::setHeliumDiffusivity(int input_value)
 		 * 
 		 */
 
-		reference += "(significant lattice damage) L. Luzzi et al., Nuclear Engineering and Design, 330 (2018) 265-271.\n\t";
+		reference += "iHeDiffusivity: (significant lattice damage) L. Luzzi et al., Nuclear Engineering and Design, 330 (2018) 265-271\n\t";
 		diffusivity = 3.3e-10 * exp(-19032.8 / history_variable[hv["Temperature"]].getFinalValue());
 		break;
 	}
@@ -352,7 +320,7 @@ void System::setHeliumDiffusivity(int input_value)
 		 * 
 		 */
 
-		reference += "iHeDiffusivity: Z. Talip et al. JNM 445 (2014) 117-127.\n\t";
+		reference += "iHeDiffusivity: Talip et al. JNM 445 (2014) 117-127\n\t";
 		diffusivity = 1.0e-7 * exp(-30057.9 / history_variable[hv["Temperature"]].getFinalValue());
 		break;
 	}
@@ -364,7 +332,7 @@ void System::setHeliumDiffusivity(int input_value)
 		 * 
 		 */
 		
-		reference += "iHeDiffusivity: null intragranular diffusivity.\n\t";
+		reference += "iHeDiffusivity: Null intragranular diffusivity\n\t";
 		diffusivity = 0.0;
 		break;
 	}
@@ -396,7 +364,7 @@ void System::setResolutionRate(int input_value)
 		 * 
 		 */
 
-		reference += "iResolutionRate: Constant resolution rate from Olander, Wongsawaeng, JNM, 354 (2006), 94-109.\n\t";
+		reference += "iResolutionRate: Constant resolution rate from Olander, Wongsawaeng, JNM, 354 (2006), 94-109\n\t";
 		resolution_rate = 1.0e-4;
 		resolution_rate *= sf_resolution_rate;
 		break;
@@ -409,7 +377,7 @@ void System::setResolutionRate(int input_value)
 		 * 
 		 */
 
-		reference += "iResolutionRate: J.A. Turnbull, JNM, 38 (1971), 203.\n\t";
+		reference += "iResolutionRate: Turnbull, JNM, 38 (1971), 203, irradiation-induced intra-granular resolution\n\t";
 		resolution_rate = 2.0 * pi * matrix[0].getFFrange() * pow(matrix[0].getFFinfluenceRadius()
 			+ sciantix_variable[sv["Intragranular bubble radius"]].getFinalValue(), 2) * history_variable[hv["Fission rate"]].getFinalValue();
 		resolution_rate *= sf_resolution_rate;
@@ -424,7 +392,7 @@ void System::setResolutionRate(int input_value)
 		 * 
 		 */
 
-		reference += "iResolutionRate: P. Losonen, JNM 304 (2002) 29�49.\n\t";
+		reference += "iResolutionRate: Losonen, JNM 304 (2002) 29-49\n\t";
 		resolution_rate = 3.0e-23 * history_variable[hv["Fission rate"]].getFinalValue();
 		resolution_rate *= sf_resolution_rate;
 
@@ -440,7 +408,7 @@ void System::setResolutionRate(int input_value)
 		 * 
 		 */
 
-		reference += "iResolutionRate: Cognini et al. NET 53 (2021) 562-571.\n\t";
+		reference += "iResolutionRate: Cognini et al. NET 53 (2021) 562-571\n\t";
 
 		/// @param irradiation_resolution_rate
 		double irradiation_resolution_rate = 2.0 * pi * matrix[0].getFFrange() * pow(matrix[0].getFFinfluenceRadius()
@@ -479,7 +447,7 @@ void System::setResolutionRate(int input_value)
 		 * 
 		 */
 
-		reference += "iResolutionRate: Null resolution rate.\n\t";
+		reference += "iResolutionRate: Null resolution rate\n\t";
 		resolution_rate = 0.0;
 		break;
 	}
@@ -510,7 +478,7 @@ void System::setTrappingRate(int input_value)
 		 * 
 		 */
 
-		reference += "iTrappingRate: constant value from Olander, Wongsawaeng, JNM, 354 (2006), 94-109.\n\t";
+		reference += "iTrappingRate: Constant value from Olander, Wongsawaeng, JNM, 354 (2006), 94-109\n\t";
 		trapping_rate = 9.35e-6;
 		trapping_rate *= sf_trapping_rate;
 
@@ -528,7 +496,7 @@ void System::setTrappingRate(int input_value)
 		 * 
 		 */
 
-		reference += "iTrappingRate: F.S. Ham, Journal of Physics and Chemistry of Solids, 6 (1958) 335-351.\n\t";
+		reference += "iTrappingRate: F.S. Ham, Journal of Physics and Chemistry of Solids, 6 (1958) 335-351\n\t";
 
 		if (sciantix_variable[sv["Intragranular bubble concentration"]].getFinalValue() == 0.0)
 			trapping_rate = 0.0;
@@ -550,7 +518,7 @@ void System::setTrappingRate(int input_value)
 		 * @brief iTrappingRate = 99 stands for the dummy case with zero trapping rate.
 		 * 
 		 */
-		reference += "iTrappingRate: dummy case with zero trapping rate.\n\t";
+		reference += "iTrappingRate: Null trapping rate\n\t";
 
 		trapping_rate = 0.0;
 		break;
@@ -579,7 +547,7 @@ void System::setNucleationRate(int input_value)
 		 * 
 		 */
 
-		reference += "iNucleationRate: constant value.\n\t";
+		reference += "iNucleationRate: Constant value\n\t";
 		nucleation_rate = 4e20;
 		nucleation_rate *= sf_nucleation_rate;
 
@@ -594,7 +562,7 @@ void System::setNucleationRate(int input_value)
 		 * 
 		 */
 
-		reference += "iNucleationRate: Olander, Wongsawaeng, JNM, 354 (2006), 94-109.\n\t";
+		reference += "iNucleationRate: Olander, Wongsawaeng, JNM, 354 (2006), 94-109\n\t";
 		nucleation_rate = 2.0 * history_variable[hv["Fission rate"]].getFinalValue() * 25;
 		nucleation_rate *= sf_nucleation_rate;
 
@@ -607,7 +575,7 @@ void System::setNucleationRate(int input_value)
 		 * @brief iNucleationRate = 99 correspond to case with zero nucleation rate.
 		 */
 
-		reference += "iNucleationRate: zero nucleation rate.\n\t";
+		reference += "iNucleationRate: Null nucleation rate\n\t";
 		nucleation_rate = 0.0;
 
 		break;
@@ -629,7 +597,7 @@ void System::setProductionRate(int input_value)
 	{
 	case 0:
 	{
-		reference += "No production rate.\n\t";
+		reference += "Null production rate\n\t";
 		production_rate = 0.0;
 		break;
 	}
@@ -640,7 +608,7 @@ void System::setProductionRate(int input_value)
 		 * 
 		 */
 		
-		reference += "Production rate = cumulative yield * fission rate density.\n\t";
+		reference += "Production rate from cumulative yield * fission rate density\n\t";
 		production_rate = yield * history_variable[hv["Fission rate"]].getFinalValue(); // (at/m3s)
 		break;
 	}
@@ -662,7 +630,7 @@ void System::setProductionRate(int input_value)
 		 * 
 		 */
 
-		reference += "Case for helium production rate: Cechet et al., Nuclear Engineering and Technology, 53 (2021) 1893-1908.\n\t";
+		reference += "Helium production rate: Cechet et al., Nuclear Engineering and Technology, 53 (2021) 1893-1908\n\t";
 		
 		// specific power = dburnup
 		sciantix_variable[sv["Specific power"]].setFinalValue((history_variable[hv["Fission rate"]].getFinalValue() * (3.12e-17) / sciantix_variable[sv["Fuel density"]].getFinalValue()));
@@ -686,7 +654,7 @@ void System::setProductionRate(int input_value)
 		 * 
 		 */
 
-		reference += "Constant production rate.\n\t";
+		reference += "Helium production rate: Constant\n\t";
 		production_rate = 1e18;
 
 		break;

@@ -35,7 +35,7 @@ void GrainBoundaryVenting()
 		/// @brief
 		/// This case corresponds to no grain boundary venting.
 
-		reference = "not considered.";
+		reference = ": Not considered";
 
 		parameter.push_back(0.0);
 		parameter.push_back(0.0);
