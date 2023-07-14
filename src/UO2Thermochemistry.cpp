@@ -38,9 +38,16 @@ void UO2Thermochemistry()
   model[model_index].setName("UO2 thermochemistry");
   
   std::string reference;
-  reference = "Blackburn (1973) J. Nucl. Mater., 46, 244-252.";
-  
   std::vector<double> parameter;
+
+  reference = "Blackburn (1973) J. Nucl. Mater., 46, 244-252.";
+
+  OxygenPotentialRepresentation equilibrium_stoichiometry;
+
+
+  sciantix_variable[sv["Equilibrium stoichiometry deviation"]].setFinalValue(
+    
+  );
 
   parameter.push_back(sciantix_variable[sv["Stoichiometry deviation"]].getInitialValue());
 

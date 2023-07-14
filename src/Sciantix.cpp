@@ -45,7 +45,6 @@ void Sciantix(int Sciantix_options[],
 
 	UO2Thermochemistry();
 	MapModel();
-	sciantix_simulation.UO2Thermochemistry();
 
 	StoichiometryDeviation();
 	MapModel();
