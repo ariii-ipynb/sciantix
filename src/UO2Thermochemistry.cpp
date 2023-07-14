@@ -43,13 +43,15 @@ void UO2Thermochemistry()
   reference = "Blackburn (1973) J. Nucl. Mater., 46, 244-252.";
 
   OxygenPotentialRepresentation equilibrium_stoichiometry;
-
-
   sciantix_variable[sv["Equilibrium stoichiometry deviation"]].setFinalValue(
-    
+    equilibrium_stoichiometry.equilibrium_stoichiometry_Blackburn(
+      history_variable[hv["Temperature"]].getFinalValue(),
+      sciantix_variable[sv["Gap oxygen partial pressure"]].getFinalValue(),
+      sciantix_variable[sv["Stoichiometry deviation"]].getFinalValue()
+    )
   );
 
-  parameter.push_back(sciantix_variable[sv["Stoichiometry deviation"]].getInitialValue());
+  parameter.push_back(sciantix_variable[sv["Equilibrium stoichiometry deviation"]].getFinalValue());
 
   model[model_index].setParameter(parameter);
   model[model_index].setRef(reference);
@@ -58,10 +60,6 @@ void UO2Thermochemistry()
 class OxygenPotentialRepresentation
 {
   public:
-    double temperature;
-    double oxygen_gap_pressure;
-    double equilibrium_stoichiometry;
-
     double equilibrium_stoichiometry_Blackburn(double temperature, double pressure, double x)
     {
       double entropic_coeff = -9.92;
