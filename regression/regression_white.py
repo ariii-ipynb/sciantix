@@ -329,33 +329,35 @@ def regression_white(wpath, mode_White, mode_gold, mode_plot, folderList, number
         do_gold()
 
 
+      row_number = 100
+
       # Retrieve the generated data of Intergranular gas swelling
       interGranularSwellingPos = findSciantixVariablePosition(data, "Intergranular gas swelling (/)")
-      gbSwelling2.append(100*data[-1,interGranularSwellingPos].astype(float))
+      gbSwelling2.append(100*data[row_number,interGranularSwellingPos].astype(float))
 
       # Retrieve the gold data of Intergranular gas swelling
       interGranularSwellingGoldPos = findSciantixVariablePosition(data_gold, "Intergranular gas swelling (/)")
-      gold.append(100*data_gold[-1,interGranularSwellingGoldPos].astype(float))
+      gold.append(100*data_gold[row_number,interGranularSwellingGoldPos].astype(float))
 
       # Retrieve the generated data of Intergranular bubble area (m2)
       bubbleAreaPos = findSciantixVariablePosition(data, "Intergranular bubble area (m2)")
-      bbarea2.append(100*data[-1,bubbleAreaPos].astype(float))
+      bbarea2.append(100*data[row_number,bubbleAreaPos].astype(float))
 
       # Retrieve the gold data of Intergranular bubble area (m2)
       bubbleAreaGoldPos = findSciantixVariablePosition(data_gold, "Intergranular bubble area (m2)")
-      bbarea2_gold.append(100*data_gold[-1,bubbleAreaGoldPos].astype(float))
+      bbarea2_gold.append(100*data_gold[row_number,bubbleAreaGoldPos].astype(float))
 
       # Retrieve the generated data of Fission gas release
       FGRPos = findSciantixVariablePosition(data, "Fission gas release (/)")
-      FGR2.append(100*data[-1,FGRPos].astype(float))
+      FGR2.append(100*data[row_number,FGRPos].astype(float))
 
       # Retrieve the generated data of Intergranular bubble concentration (bub/m2)
       BubConcPos = findSciantixVariablePosition(data, "Intergranular bubble concentration (bub/m2)")
-      bbconc.append(1e-12*data[-1,BubConcPos].astype(float))
+      bbconc.append(1e-12*data[row_number,BubConcPos].astype(float))
 
       # Retrieve the gold data of Intergranular bubble concentration
       BubConcPosGold = findSciantixVariablePosition(data_gold, "Intergranular bubble concentration (bub/m2)")
-      bbconc_gold.append(1e-12*data_gold[-1,BubConcPosGold].astype(float))
+      bbconc_gold.append(1e-12*data_gold[row_number,BubConcPosGold].astype(float))
 
       os.chdir('..')
 
