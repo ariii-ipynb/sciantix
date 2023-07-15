@@ -329,7 +329,7 @@ def regression_white(wpath, mode_White, mode_gold, mode_plot, folderList, number
         do_gold()
 
 
-      row_number = 100
+      row_number = -1
 
       # Retrieve the generated data of Intergranular gas swelling
       interGranularSwellingPos = findSciantixVariablePosition(data, "Intergranular gas swelling (/)")
