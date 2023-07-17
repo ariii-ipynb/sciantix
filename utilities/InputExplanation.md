@@ -74,7 +74,7 @@ In this file, the user can provide initial conditions to some of the SCIANTIX st
 \#	initial fuel burn-up (MWd/kgUO2)
 0.0
 \#	initial fuel effective burn-up (MWd/kgUO2)
-10970.0
+10960.0
 \#	initial fuel density (kg/m3)
 0.0	3.0	0.0	0.0	97.0
 \#	initial U234 U235 U236 U237 U238 (% of heavy atoms) content

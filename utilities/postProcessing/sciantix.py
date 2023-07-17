@@ -5,7 +5,7 @@ the purposes are:
     - to plot variables, choosing both x- and y- axes.
 
 @author: Giovanni Zullo
-@author: C Valot
+@author: C. Valot
 
 Instructions:
 - run sciantix.py in a folder containing the output.txt file

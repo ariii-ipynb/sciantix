@@ -39,7 +39,6 @@
 #include "MatrixDeclaration.h"
 #include "MapMatrix.h"
 #include "ConstantNumbers.h"
-#include "UO2Thermochemistry.h"
 
 /// @brief
 /// Derived class representing the operations of SCIANTIX. The conjunction of the models with the implemented solvers results in the simulation.
@@ -708,7 +707,7 @@ public:
   if(history_variable[hv["Temperature"]].getFinalValue() < 1000.0)
   {
     sciantix_variable[sv["Stoichiometry deviation"]].setConstant();
-    sciantix_variable[sv["Fuel oxygen partial pressure"]].setFinalValue(0.0);
+    // sciantix_variable[sv["Fuel oxygen partial pressure"]].setFinalValue(0.0);
   }
 
   else if(input_variable[iv["iStoichiometryDeviation"]].getValue() < 5)
@@ -725,17 +724,32 @@ public:
 
 	else if(input_variable[iv["iStoichiometryDeviation"]].getValue() > 4)
 	{
+		// sciantix_variable[sv["Stoichiometry deviation"]].setFinalValue(
+		// 	solver.LangmuirModelBlackburn(
+		// 		sciantix_variable[sv["Stoichiometry deviation"]].getFinalValue(),
+		// 			model[sm["Stoichiometry deviation"]].getParameter(),
+		// 			physics_variable[pv["Time step"]].getFinalValue()
+		// 	)
+		// );
+
 		sciantix_variable[sv["Stoichiometry deviation"]].setFinalValue(
-			solver.NewtonLangmuirBasedModel(
-				sciantix_variable[sv["Stoichiometry deviation"]].getInitialValue(),
+			solver.LangmuirModelLindemerBesmann(
+				sciantix_variable[sv["Stoichiometry deviation"]].getFinalValue(),
 					model[sm["Stoichiometry deviation"]].getParameter(),
 					physics_variable[pv["Time step"]].getFinalValue()
 			)
 		);
 	}
+	
+	// sciantix_variable[sv["Fuel oxygen partial pressure"]].setFinalValue(
+	// 	oxygenPotentialBlackburn(
+	// 		sciantix_variable[sv["Stoichiometry deviation"]].getFinalValue(),
+	// 		history_variable[hv["Temperature"]].getFinalValue()
+	// 		)
+	// 	);
 
 	sciantix_variable[sv["Fuel oxygen partial pressure"]].setFinalValue(
-		ThermochemicalModel(
+		oxygenPotentialLindemerBesmann(
 			sciantix_variable[sv["Stoichiometry deviation"]].getFinalValue(),
 			history_variable[hv["Temperature"]].getFinalValue()
 			)

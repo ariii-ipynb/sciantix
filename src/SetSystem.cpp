@@ -81,6 +81,44 @@ void System::setBubbleDiffusivity(int input_value)
 			break;
 		}
 
+		case 2:
+		{	
+			if(sciantix_variable[sv["Intragranular bubble radius"]].getInitialValue() == 0)
+				bubble_diffusivity = 0;
+
+			else
+			{
+				// Assuming that the bubble motion during irradiation is controlled by the volume diffusion mechanism,
+				// the bubble diffusivty takes the form Db = (V_atom_in_lattice/bubble_volume) * volume_self_diffusivity
+				// @ref Evans, JNM 210 (1994) 21-29
+				// @ref Van Uffelen et al. NET 43-6 (2011)
+	
+				double x = sciantix_variable[sv["Stoichiometry deviation"]].getFinalValue();
+				double temperature = history_variable[hv["Temperature"]].getFinalValue();
+				double fission_rate = history_variable[hv["Fission rate"]].getFinalValue();
+
+				double d1 = 7.6e-10 * exp(-4.86e-19 / (boltzmann_constant * temperature));
+				double d2 = 4.0 * 1.41e-25 * sqrt(fission_rate) * exp(-1.91e-19 / (boltzmann_constant * temperature));
+				double d3 = 8.0e-40 * fission_rate;
+
+				double S = exp(-74100/temperature); // Schottky energy barrier
+				double G = exp(-35800/temperature); // Frenkel energy barrier
+				double vU = S/pow(G,2.0) * (0.5*pow(x,2.0) + G + 0.5*sqrt(pow(x, 4.0) + 4 * G * pow(x,2.0))); // oxidation-induced vacancy concentration
+
+				double s = 3e-10; // atomic jump distance
+				double jv = 1e13 * exp(-27800 / temperature) ;
+				double d4 = pow(s,2) * jv * vU;
+
+				double volume_self_diffusivity = 3.0e-5*exp(-4.5/(boltzmann_constant*history_variable[hv["Temperature"]].getFinalValue()));
+				double bubble_radius = sciantix_variable[sv["Intragranular bubble radius"]].getInitialValue();
+
+				bubble_diffusivity = 3 * matrix[0].getSchottkyVolume() * volume_self_diffusivity / (4.0 * pi * pow(bubble_radius,3.0));
+			}
+			
+			break;
+		}
+
+
 		default:
 			ErrorMessages::Switch("SetSystem.cpp", "iBubbleDiffusivity", input_value);
 			break;
@@ -128,7 +166,7 @@ void System::setFissionGasDiffusivity(int input_value)
 
 		double d1 = 7.6e-10 * exp(-4.86e-19 / (boltzmann_constant * temperature));
 		double d2 = 4.0 * 1.41e-25 * sqrt(fission_rate) * exp(-1.91e-19 / (boltzmann_constant * temperature));
-		double d3 = 2.0e-40 * fission_rate;
+		double d3 = 8.0e-40 * fission_rate;
 
 		diffusivity = d1 + d2 + d3;
 		diffusivity *= sf_diffusivity;
@@ -214,7 +252,7 @@ void System::setFissionGasDiffusivity(int input_value)
 	case 6:
 	{
 		/**
-		 * @brief this case is for 
+		 * @brief this case is for hyperstoichiometric fuel
 		 * 
 		 */
 		double x = sciantix_variable[sv["Stoichiometry deviation"]].getFinalValue();
@@ -225,13 +263,13 @@ void System::setFissionGasDiffusivity(int input_value)
 		double d2 = 4.0 * 1.41e-25 * sqrt(fission_rate) * exp(-1.91e-19 / (boltzmann_constant * temperature));
 		double d3 = 8.0e-40 * fission_rate;
 
-		double S = exp(-74100/temperature);
-		double G = exp(-35800/temperature);
-		double uranium_vacancies = 0.0;
+		double S = exp(-74100/temperature); // Schottky energy barrier
+		double G = exp(-35800/temperature); // Frenkel energy barrier
+		double vU = S/pow(G,2.0) * (0.5*pow(x,2.0) + G + 0.5*sqrt(pow(x, 4.0) + 4 * G * pow(x,2.0))); // oxidation-induced vacancy concentration
 
-		uranium_vacancies = S/pow(G,2.0) * (0.5*pow(x,2.0) + G + 0.5*pow((pow(x,4.0) + 4*G*pow(x,2.0)),0.5));
-
-		double d4 = pow(3e-10,2)*1e13*exp(-27800/temperature)*uranium_vacancies;
+		double s = 3e-10; // atomic jump distance
+		double jv = 1e13 * exp(-27800 / temperature) ;
+		double d4 = pow(s,2) * jv * vU;
 
 		reference += "iFissionGasDiffusionCoefficient: \n\t";
 
@@ -242,6 +280,30 @@ void System::setFissionGasDiffusivity(int input_value)
 		break;		
 	}
 
+	case 7:
+	{
+		/**
+		 * @brief this case is for hyperstoichiometric fuel
+		 * 
+		 */
+
+		double x = sciantix_variable[sv["Stoichiometry deviation"]].getFinalValue();
+		double temperature = history_variable[hv["Temperature"]].getFinalValue();
+		double fission_rate = history_variable[hv["Fission rate"]].getFinalValue();
+
+    double d1 = 7.6e-10 * exp(-4.86e-19/temperature/boltzmann_constant);
+    double d2 = 4.0 * 1.41e-25 * sqrt(fission_rate) * exp(-1.91e-19 / (boltzmann_constant * temperature));
+    double d3 = 8e-40 * fission_rate;
+    double d4 = pow(x,2) * 2.22e-8 * exp(-20230 / temperature);
+
+		reference += "iFissionGasDiffusionCoefficient: \n\t";
+
+		diffusivity = d1 + d2 + d3 + d4;
+
+		diffusivity *= sf_diffusivity;
+
+		break;		
+	}
 
 	case 99:
 	{

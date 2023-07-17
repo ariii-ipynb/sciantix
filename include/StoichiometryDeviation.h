@@ -21,5 +21,7 @@
 #include "HistoryVariableDeclaration.h"
 #include "MapHistoryVariable.h"
 #include "ConstantNumbers.h"
+#include "ModelDeclaration.h"
+#include "MapModel.h"
 
 void StoichiometryDeviation( );

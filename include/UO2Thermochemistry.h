@@ -19,5 +19,8 @@
 #include "ModelDeclaration.h"
 #include "MapSciantixVariable.h"
 #include "MapHistoryVariable.h"
+#include "SolverDeclaration.h"
 
 void UO2Thermochemistry();
+double oxygenPotentialBlackburn(double x, double T);
+double oxygenPotentialLindemerBesmann(double x, double T);

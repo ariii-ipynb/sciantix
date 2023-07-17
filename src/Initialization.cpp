@@ -46,7 +46,7 @@ void Initialization()
 	{
 		case 0: case 1:
 		{
-			Sciantix_variables[40] = 10970.0 * (1.0 - Sciantix_variables[68]);
+			Sciantix_variables[40] = 10960.0 * (1.0 - Sciantix_variables[68]);
 
 			break;
 		}
@@ -124,6 +124,6 @@ void Initialization()
 
 	// Warnings
 	if(Sciantix_variables[38] > 0.0 && Sciantix_variables[65] == 0.0)
-		std::cout << "WARNING - FIMA calculation: Initial fuel burnup > 0 but null initial irradiation time. Check initial irradiation time." << std::endl;
+		std::cout << "Warning - FIMA calculation: Initial fuel burnup > 0 but null initial irradiation time. Check initial irradiation time." << std::endl;
 
 }

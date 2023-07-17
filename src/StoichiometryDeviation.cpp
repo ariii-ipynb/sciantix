@@ -226,26 +226,32 @@ void StoichiometryDeviation()
        */
       const double pi = CONSTANT_NUMBERS_H::MathConstants::pi;
 
-      // Blackburn function
-      // lnPO2(x) = A + B * x**2 + 2 * log(x * (2+x) / (1 - x)) - C / T
-      double lnPO2_fitA = 9.92;
-      double lnPO2_fitB = 108;
-      double lnPO2_fitC = 32700;
-
       double adsoprtion_site_density = 1.66e-6; // density of adsorption sites (mol/m2)
       double rho_U = 4e4; // mol(U)/m3
-      double steam_dissociation_constant = 2.48e10 * exp(-28105.0/history_variable[hv["Temperature"]].getFinalValue()); // (1 / s)
+      double steam_dissociation_constant = 4.22e10 * exp(-53810/1.987/history_variable[hv["Temperature"]].getFinalValue()); // (1 / s)
       double tau_inv = steam_dissociation_constant * surface_to_volume * adsoprtion_site_density / rho_U;
       double sticking_probability = 0.023;
       double MMh2o = 0.018; // h2o molar mass (kg/mol)
-      double desorption_rate_constant = 1.0e13 * exp(-21557.0/history_variable[hv["Temperature"]].getFinalValue()); // desorption rate constant
+      double desorption_rate_constant = 1.0e13 * exp(-40000/1.987/history_variable[hv["Temperature"]].getFinalValue()); // desorption rate constant
       double Bh2o = sticking_probability/sqrt(2*pi*8.314*history_variable[hv["Temperature"]].getFinalValue()*MMh2o);
       double A = 1.0135e5 * Bh2o/(adsoprtion_site_density*desorption_rate_constant); // (1/atm)
       double theta = A*history_variable[hv["Steam pressure"]].getFinalValue() /(1+A*history_variable[hv["Steam pressure"]].getFinalValue()); // surface coverage term
-      
-      parameter.push_back(tau_inv*theta);
-      parameter.push_back(exp(-lnPO2_fitC/(2*history_variable[hv["Temperature"]].getFinalValue())+lnPO2_fitA/2)/sqrt(sciantix_variable[sv["Gap oxygen partial pressure"]].getFinalValue()));
-      parameter.push_back(lnPO2_fitB/2);
+      double rate_term = theta * tau_inv;
+
+      // Freundlich isoterm
+      // double freundlich_isotherm = (5.3e8*exp(-21250/history_variable[hv["Temperature"]].getFinalValue()) * sqrt(history_variable[hv["Steam pressure"]].getFinalValue()));
+      // double rate_term = freundlich_isotherm * surface_to_volume * adsoprtion_site_density / rho_U;
+
+      double entropic_coeff = model[sm["UO2 thermochemistry"]].getParameter().at(0);
+      double x_coeff = model[sm["UO2 thermochemistry"]].getParameter().at(1);
+      double enthalpic_coeff = model[sm["UO2 thermochemistry"]].getParameter().at(2);
+
+      parameter.push_back(rate_term);
+      if(sciantix_variable[sv["Gap oxygen partial pressure"]].getFinalValue() > 0.0)
+        parameter.push_back(exp(enthalpic_coeff/(2*history_variable[hv["Temperature"]].getFinalValue())-entropic_coeff/2)/sqrt(sciantix_variable[sv["Gap oxygen partial pressure"]].getFinalValue()));
+      else
+        parameter.push_back(0.0);
+      parameter.push_back(x_coeff/2);
 
       model[model_index].setParameter(parameter);
       model[model_index].setRef(reference);
@@ -254,49 +260,6 @@ void StoichiometryDeviation()
     }
 
     case 6 :
-    {
-      /**
-       * @brief
-       * The model for fuel oxidation and stoichimetry deviation evolution is described with a mechanistic Langmuir-based approach
-       * @ref Massih, A. R. "UO2 fuel oxidation and fission gas release." Swedish Radiation Safety Authority report, Report 2018 (2018): 25.
-       * The oxidation rate follows: dx/dt = theta/tau (1 - sqrt(Po2(x)/Po2))
-       * In SCIANTIX, the ODE is rewritten as: dx / dt = K (1 - beta * exp(alpha * x))
-       * 
-       * ### iStoichiometryDeviation = 5
-       * 
-       * Range of utilization:
-       * - Pure steam
-       * - Temperature range: 1073-1673 K
-       * 
-       */
-      const double pi = CONSTANT_NUMBERS_H::MathConstants::pi;
-
-      // fitted function
-      // lnPO2(x) = A + B * x**2 + 2 * log(x * (2+x) / (1 - x)) - C / T
-      double lnPO2_fitA = 10.727;
-      double lnPO2_fitB = 97.230;
-      double lnPO2_fitC = 38025.034;
-
-      double adsoprtion_site_density = 1.66e-6; // density of adsorption sites (mol/m2)
-      double rho_U = 4e4; // mol(U)/m3
-      double steam_dissociation_constant = 2.48e10 * exp(-28105.0/history_variable[hv["Temperature"]].getFinalValue()); // (1 / s)
-      double tau_inv = steam_dissociation_constant * surface_to_volume * adsoprtion_site_density / rho_U;
-      double sticking_probability = 0.023;
-      double MMh2o = 0.018; // h2o molar mass (kg/mol)
-      double desorption_rate_constant = 1.0e13 * exp(-21557.0/history_variable[hv["Temperature"]].getFinalValue()); // desorption rate constant
-      double Bh2o = sticking_probability/sqrt(2*pi*8.314*history_variable[hv["Temperature"]].getFinalValue()*MMh2o);
-      double A = 1.0135e5 * Bh2o/(adsoprtion_site_density*desorption_rate_constant); // (1/atm)
-      double theta = A*history_variable[hv["Steam pressure"]].getFinalValue() /(1+A*history_variable[hv["Steam pressure"]].getFinalValue()); // surface coverage term
-      
-      parameter.push_back(tau_inv*theta);
-      parameter.push_back(exp(-lnPO2_fitC/(2*history_variable[hv["Temperature"]].getFinalValue())+lnPO2_fitA/2)/sqrt(sciantix_variable[sv["Gap oxygen partial pressure"]].getFinalValue()));
-      parameter.push_back(lnPO2_fitB/2);
-
-      model[model_index].setParameter(parameter);
-      model[model_index].setRef(reference);
-    }
-
-    case 7 :
     {
       /**
        * @brief
@@ -318,36 +281,38 @@ void StoichiometryDeviation()
       const double pi = CONSTANT_NUMBERS_H::MathConstants::pi;
       surface_to_volume = 225;
       
-      double k_star = 1e4 * exp(-21253.0/history_variable[hv["Temperature"]].getFinalValue()-2.43); // (mol/m2 s)
-      double tau_inv = k_star * (surface_to_volume)/8.0e4;
-      double s = 0.023;
-      double ka = 1.0e13 * exp(-21557.0/history_variable[hv["Temperature"]].getFinalValue());
-      double B = s/sqrt(2*pi*8.314*history_variable[hv["Temperature"]].getFinalValue()*0.018);
-      double A = 1.0135e5*B/(1.66e-6*ka); // (1/atm)
-      double theta = A*history_variable[hv["Steam pressure"]].getFinalValue()*1.013e5 /(1+A*history_variable[hv["Steam pressure"]].getFinalValue()*1.013e5);
-      double gamma = sqrt(exp(-32700.0/history_variable[hv["Temperature"]].getFinalValue()+9.92)*1.013e5);
-      double rad_c = sqrt(0.0004);
-      double beta;
+      double adsoprtion_site_density = 1.66e-6; // density of adsorption sites (mol/m2)
+      double rho_U = 4e4; // mol(U)/m3
+      double steam_dissociation_constant = 4.22e10 * exp(-53810/1.987/history_variable[hv["Temperature"]].getFinalValue()); // (1 / s)
+      double tau_inv = steam_dissociation_constant * surface_to_volume * adsoprtion_site_density / rho_U;
+      double sticking_probability = 0.023;
+      double MMh2o = 0.018; // h2o molar mass (kg/mol)
+      double desorption_rate_constant = 1.0e13 * exp(-40000/1.987/history_variable[hv["Temperature"]].getFinalValue()); // desorption rate constant
+      double Bh2o = sticking_probability/sqrt(2*pi*8.314*history_variable[hv["Temperature"]].getFinalValue()*MMh2o);
+      double A = 1.0135e5 * Bh2o/(adsoprtion_site_density*desorption_rate_constant); // (1/atm)
+      double theta = A*history_variable[hv["Steam pressure"]].getFinalValue() /(1+A*history_variable[hv["Steam pressure"]].getFinalValue()); // surface coverage term
+      double rate_term = theta * tau_inv;
 
-      if(sciantix_variable[sv["Gap oxygen partial pressure"]].getFinalValue()>0)
-        beta = rad_c*gamma/sqrt(sciantix_variable[sv["Gap oxygen partial pressure"]].getFinalValue()*1.013e5);
-      else 
-        beta = 0.0;
+      // Freundlich isoterm
+      // double freundlich_isotherm = (5.3e8*exp(-21250/history_variable[hv["Temperature"]].getFinalValue()) * sqrt(history_variable[hv["Steam pressure"]].getFinalValue()));
+      // double rate_term = freundlich_isotherm * surface_to_volume * adsoprtion_site_density / rho_U;
 
-      double alpha = 57/2;
-      double K = tau_inv*theta;
+      double entropic_coeff = model[sm["UO2 thermochemistry"]].getParameter().at(0);
+      double x_coeff = model[sm["UO2 thermochemistry"]].getParameter().at(1);
+      double enthalpic_coeff = model[sm["UO2 thermochemistry"]].getParameter().at(2);
 
-      parameter.push_back(K);
-      parameter.push_back(beta);
-      parameter.push_back(alpha);
+      parameter.push_back(rate_term);
+      if(sciantix_variable[sv["Gap oxygen partial pressure"]].getFinalValue() > 0.0)
+        parameter.push_back(exp(enthalpic_coeff/(2*history_variable[hv["Temperature"]].getFinalValue())-entropic_coeff/2)/sqrt(sciantix_variable[sv["Gap oxygen partial pressure"]].getFinalValue()));
+      else
+        parameter.push_back(0.0);
+      parameter.push_back(x_coeff/2);
 
       model[model_index].setParameter(parameter);
       model[model_index].setRef(reference);
 
       break;
     }
-
-
     
     default :
       ErrorMessages::Switch("StoichiometryDeviation.cpp", "iStoichiometryDeviation", int(input_variable[iv["iStoichiometryDeviation"]].getValue()));

@@ -22,12 +22,11 @@ void UO2Thermochemistry()
    * @brief This routine defines the model to evaluate the oxygen partial pressure (in atm) in hyperstoichiometric UO2+x fuel
    * as a function of:
    * 
-   * @param[in] stoichiometry_deviation
-   * @param[in] temperature
-   * 
-   * @param[out] PO2_x oxygen partial pressure in UO2+x (in atm) 
+   * @param[in] T tuel temperature (K)
+   * @param[in] PO2_x oxygen partial pressure in UO2+x (in atm) 
    * from Blackburn’s relation, @ref *Blackburn (1973) J. Nucl. Mater., 46, 244–252*
    * 
+   * @param[out] equilibrium_stoichiometry_deviation
    */
 
 	if (!input_variable[iv["iStoichiometryDeviation"]].getValue()) return;
@@ -42,56 +41,65 @@ void UO2Thermochemistry()
 
   reference = "Blackburn (1973) J. Nucl. Mater., 46, 244-252.";
 
-  OxygenPotentialRepresentation equilibrium_stoichiometry;
+  // oxygen-to-metal ratio increase due to fission products
+  sciantix_variable[sv["Stoichiometry deviation"]].setFinalValue(
+    solver.Integrator(
+      sciantix_variable[sv["Stoichiometry deviation"]].getInitialValue(),
+      (1.4e-4 / 0.88),
+      sciantix_variable[sv["Burnup"]].getIncrement()
+    )
+  );
+
+  // Equilibrium stoichiometry - Blackburn
+  // sciantix_variable[sv["Equilibrium stoichiometry deviation"]].setFinalValue(
+  //   solver.equilibriumStoiochiometryBlackburn(
+  //     history_variable[hv["Temperature"]].getFinalValue(),
+  //     sciantix_variable[sv["Gap oxygen partial pressure"]].getFinalValue(),
+  //     sciantix_variable[sv["Stoichiometry deviation"]].getFinalValue()
+  //   )
+  // );
+
+  // Parameters for Blackburn model
+  // double entropic_coeff = -9.92;
+  // double x_coeff = 108;
+  // double enthalpic_coeff = -32700;
+
+  // Equilibrium stoichiometry - Lindemer and Besmann
   sciantix_variable[sv["Equilibrium stoichiometry deviation"]].setFinalValue(
-    equilibrium_stoichiometry.equilibrium_stoichiometry_Blackburn(
+    solver.equilibriumStoiochiometryLindemerBesmann(
       history_variable[hv["Temperature"]].getFinalValue(),
       sciantix_variable[sv["Gap oxygen partial pressure"]].getFinalValue(),
       sciantix_variable[sv["Stoichiometry deviation"]].getFinalValue()
     )
   );
 
-  parameter.push_back(sciantix_variable[sv["Equilibrium stoichiometry deviation"]].getFinalValue());
+  // Parameters for Lindemer and Besmann model
+  double entropic_coeff = -126/8.314;
+  double x_coeff = 0.0;
+  double enthalpic_coeff = -312807/8.314;
+
+  parameter.push_back(entropic_coeff);
+  parameter.push_back(x_coeff);
+  parameter.push_back(enthalpic_coeff);
 
   model[model_index].setParameter(parameter);
   model[model_index].setRef(reference);
 }
 
-class OxygenPotentialRepresentation
+double oxygenPotentialBlackburn(double x, double T)
 {
-  public:
-    double equilibrium_stoichiometry_Blackburn(double temperature, double pressure, double x)
-    {
-      double entropic_coeff = -9.92;
-      double x_coeff = 108;
-      double enthalpic_coeff = -32700;
+  double entropic_coeff = -9.92;
+  double x_coeff = 108;
+  double enthalpic_coeff = -32700;
 
-      double fun(0.0);
-      double deriv(0.0);
-      double x1(0.0);
-      unsigned short int iter(0);
-      const double tol(1.0e-3);
-      const unsigned short int max_iter(50);
-    
-      if(pressure==0)
-	  		std::cout << "Warning: Check equilibrium_stoichiometry_Blackburn!" << std::endl;
-    
-      if(x == 0.0)
-        x = 1.0e-7;
+  return exp(-entropic_coeff + x_coeff * pow(x, 2) + 2 * log(x * (2 + x) / (1 - x)) + enthalpic_coeff / T);
+}
 
-      while (iter < max_iter)
-      {
-        fun =  -entropic_coeff + x_coeff * pow(x, 2) + 2 * log(x * (2 + x) / (1 - x)) + enthalpic_coeff / temperature - log(pressure);
+double oxygenPotentialLindemerBesmann(double x, double T)
+{
+  double entropic_coeff = -126/8.314;
+  // double x_coeff = 0.0;c
+  double enthalpic_coeff = -312807/8.314;
 
-        deriv = x_coeff + 2.0 / x + 2 / (1.0 - x);
-
-        x1 = x - fun/deriv;
-        x = x1;
-
-        if(abs(fun)<tol)
-          return x1;
-
-        iter++;
-      }
-    }
-};
+  return exp(enthalpic_coeff / T - entropic_coeff + 2 * log((x * pow((1 - 2*x),2)) * pow((1 - 3*x),-3)));
+}

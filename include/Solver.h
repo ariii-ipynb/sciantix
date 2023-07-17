@@ -44,7 +44,6 @@ public:
 		return 0.5 * ((initial_value + parameter[1] * increment) + sqrt(pow(initial_value + parameter[1] * increment, 2) + 4.0 * parameter[0] * increment));
 	}
 
-	//double Decay(double initial_condition, std::vector<double> parameter, double increment)
 	double Decay(double initial_condition, double decay_rate, double source_term, double increment)
 	{
 		/// Solver for the ODE [y' = - L y + S]
@@ -233,7 +232,6 @@ public:
 		}
 	}
 
-
   double QuarticEquation(std::vector<double> parameter)
   {
 		/**
@@ -307,7 +305,7 @@ public:
 		}
 	}
 
-	double NewtonLangmuirBasedModel(double initial_value, std::vector<double> parameter, double increment)
+	double LangmuirModelBlackburn(double initial_value, std::vector<double> parameter, double increment)
 	{
 		/**
 		 * @brief Solver for dx/dt = A (1 - B * x(2+x)/(1-x) * exp(C * x^2))
@@ -335,8 +333,84 @@ public:
 
     while (iter < max_iter)
     {
-      fun = x0 - x00 - A * increment * (1.0 - B * x0*(2.0+x0)/(1.0-x0) * exp(C*pow(x0,2.0)));
-      deriv = 1.0 + A*B*increment*exp(C*pow(x0,2))*(-2.0*C*pow(x0,2.0)*(x0+2.0) / (x0-1.0) - (pow(x0,2.0)-2.0*x0-2.0)*pow(x0-1.0,-2));
+			fun = x0 - x00 - A * increment * (1.0 - B * x0*(2.0+x0)/(1.0-x0) * exp(C*pow(x0,2.0)));
+			deriv = 1.0 + A*B*increment*exp(C*pow(x0,2))*(-2.0*C*pow(x0,2.0)*(x0+2.0) / (x0-1.0) - (pow(x0,2.0)-2.0*x0-2.0)*pow(x0-1.0,-2));
+                    
+      x1 = x0 - fun/deriv;
+      x0 = x1;
+
+      if(abs(fun)<tol) return x1;
+
+      iter++;
+    }
+    return x1;
+	}
+
+	double equilibriumStoiochiometryBlackburn(double temperature, double pressure, double x)
+	{
+		double entropic_coeff = -9.92;
+		double x_coeff = 108;
+		double enthalpic_coeff = -32700;
+
+		double fun(0.0);
+		double deriv(0.0);
+		double x1(0.0);
+		unsigned short int iter(0);
+		const double tol(1.0e-5);
+		const unsigned short int max_iter(200);
+	
+		if(pressure==0)
+			return x;
+	
+		if(x == 0.0)
+			x = 1.0e-7;
+
+		while (iter < max_iter)
+		{
+			fun =  -entropic_coeff + x_coeff * pow(x, 2) + 2 * log(x * (2.0 + x) / (1 - x)) + enthalpic_coeff / temperature - log(pressure);
+			deriv = 2 * x_coeff * x + 2.0 / x + 2.0 / (2. + x) + 2 / (1.0 - x);
+
+			x1 = x - fun/deriv;
+			x = x1;
+
+			if(abs(fun)<tol)
+				return x1;
+
+			iter++;
+		}
+		return x1;
+	}
+
+	double LangmuirModelLindemerBesmann(double initial_value, std::vector<double> parameter, double increment)
+	{
+		/**
+		 * @brief Solver for dx/dt = A (1 - B * (x(1-2x)^2/(1-3x^3)))
+		 * @author G. Zullo
+		 * 
+		 */
+
+		/// @param parameter[0] = A
+		/// @param parameter[1] = B
+		/// @param parameter[2] = C
+
+		double A = parameter.at(0);
+		double B = parameter.at(1);
+		// double C = parameter.at(2);
+
+		double x0 = initial_value;
+		double x00 = initial_value;
+
+    double fun(0.0);
+    double deriv(0.0);
+    double x1(0.0);
+    unsigned short int iter(0);
+    const double tol(1.0e-5);
+    const unsigned short int max_iter(200);
+
+    while (iter < max_iter)
+    {
+			fun = x0 - x00 - A * increment * (1.0 - B * (x0 * pow((1 - 2*x0),2)) * pow((1 - 3*x0),-3));
+			deriv = 1.0 + A*B*increment*(1 - 2*x0)/pow((1 - 3*x0),4);
 
       x1 = x0 - fun/deriv;
       x0 = x1;
@@ -348,6 +422,40 @@ public:
     return x1;
 	}
 
+	double equilibriumStoiochiometryLindemerBesmann(double temperature, double pressure, double x)
+	{
+  double entropic_coeff = -126/8.314;
+  // double x_coeff = 0.0;c
+  double enthalpic_coeff = -312807/8.314;
+
+		double fun(0.0);
+		double deriv(0.0);
+		double x1(0.0);
+		unsigned short int iter(0);
+		const double tol(1.0e-5);
+		const unsigned short int max_iter(200);
+	
+		if(pressure==0)
+			return x;
+	
+		if(x == 0.0)
+			x = 1.0e-7;
+
+		while (iter < max_iter)
+		{
+			fun = enthalpic_coeff / temperature - entropic_coeff + 2 * log((x * pow((1 - 2*x),2)) * pow((1 - 3*x),-3)) - log(pressure);
+			deriv = 2.0 / x - 8.0 / (1 - 2*x) + 18 / (1.0 - 3*x);
+
+			x1 = x - fun/deriv;
+			x = x1;
+
+			if(abs(fun)<tol)
+				return x1;
+
+			iter++;
+		}
+		return x1;
+	}
 
 	Solver() {}
 	~Solver() {}
