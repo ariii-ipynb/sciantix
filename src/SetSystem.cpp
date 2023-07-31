@@ -162,7 +162,7 @@ void System::setFissionGasDiffusivity(int input_value)
 
 		double d1 = 7.6e-10 * exp(-4.86e-19 / (boltzmann_constant * temperature));
 		double d2 = 4.0 * 1.41e-25 * sqrt(fission_rate) * exp(-1.91e-19 / (boltzmann_constant * temperature));
-		double d3 = 2.0e-40 * fission_rate;
+		double d3 = 8.0e-40 * fission_rate;
 
 		diffusivity = d1 + d2 + d3;
 		diffusivity *= sf_diffusivity;

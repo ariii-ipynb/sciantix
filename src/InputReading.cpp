@@ -176,14 +176,12 @@ void InputReading()
 	 * 	1= HBS porosity evolution based on Spino et al. (2006) data
 	 * 
 	 * iStoichiometryDeviation
-	 * 	0= 
-	 * 	1= 
-	 * 	2= 
+	 * 	0= not considered
+	 * 	1= model for fuel oxidation in steam environment
 	 * 
 	 * iBubbleDiffusivity
-	 * 	0= 
-	 * 	1= 
-	 * 	2= 
+	 * 	0= not considered
+	 * 	1= active
 	 */
 
 	Sciantix_options[0] = ReadOneSetting("iGrainGrowth", input_settings, input_check);
