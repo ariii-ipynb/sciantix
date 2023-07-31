@@ -211,16 +211,16 @@ void SetVariables(int Sciantix_options[], double Sciantix_history[], double Scia
 	history_variable.emplace_back();
 	history_variable[hv_counter].setName("Temperature");
 	history_variable[hv_counter].setUOM("(K)");
-	history_variable[hv_counter].setInitialValue(Sciantix_history[0]);
-	history_variable[hv_counter].setFinalValue(Sciantix_history[1]);
+	history_variable[hv_counter].setInitialValue(Sciantix_history[0] * Sciantix_scaling_factors[4]);
+	history_variable[hv_counter].setFinalValue(Sciantix_history[1] * Sciantix_scaling_factors[4]);
 	history_variable[hv_counter].setOutput(1);
 	++hv_counter;
 
 	history_variable.emplace_back();
 	history_variable[hv_counter].setName("Fission rate");
 	history_variable[hv_counter].setUOM("(fiss / m3 s)");
-	history_variable[hv_counter].setInitialValue(Sciantix_history[2]);
-	history_variable[hv_counter].setFinalValue(Sciantix_history[3]);
+	history_variable[hv_counter].setInitialValue(Sciantix_history[2] * Sciantix_scaling_factors[5]);
+	history_variable[hv_counter].setFinalValue(Sciantix_history[3] * Sciantix_scaling_factors[5]);
 	history_variable[hv_counter].setOutput(1);
 	++hv_counter;
 
@@ -961,8 +961,8 @@ void SetVariables(int Sciantix_options[], double Sciantix_history[], double Scia
 	sf_trapping_rate = Sciantix_scaling_factors[1];
 	sf_nucleation_rate = Sciantix_scaling_factors[2];
 	sf_diffusivity = Sciantix_scaling_factors[3];
-	sf_screw_parameter = Sciantix_scaling_factors[4];
-	sf_span_parameter = Sciantix_scaling_factors[5];
+	sf_temperature = Sciantix_scaling_factors[4];
+	sf_fission_rate = Sciantix_scaling_factors[5];
 	sf_cent_parameter = Sciantix_scaling_factors[6];
 	sf_helium_production_rate = Sciantix_scaling_factors[7];
 
