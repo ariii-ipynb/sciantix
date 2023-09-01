@@ -21,6 +21,10 @@ void SolidSwelling()
 {
 	/**
 	 * @brief This function defines the sciantix model *SolidSwelling*.
+	 * 
+	 * The model SolidSwelling is used to evaluate 
+	 * 
+	 * - SolidSwelling SolidSwelling
    * 
 	 */
 
@@ -29,6 +33,8 @@ void SolidSwelling()
 	model[model_index].setName("Solid swelling");
 
 	std::vector<double> parameter;
+
+  const double N_av = CONSTANT_NUMBERS_H::PhysicsConstants::avogadro_number;
 
   const double v_U = 40.93e-24;						/*Fuel specific volume (UO2 and PuO2) [m3/molecule]*/
 
@@ -39,7 +45,7 @@ void SolidSwelling()
   const double v_MI = 14.73e-24;					/*Metallic inclusions specific volume*/
   const double v_AEO = 71.2e-24;					/*Alkaline earth oxides specific volume*/
   const double v_Oth = 31.1e-24;					/*Other fission products specific volume*/
-  // const double v_Xe = 84.8e-24;						/*Xenon covolume*/
+  const double v_Xe = 84.8e-24;						/*Xenon covolume*/
 
   /*Here I need to ponder on the differentiation of the yielding depending on the matrix, for now we only care about UO2*/
 

@@ -10,32 +10,33 @@
 //                                                                                  //
 //  Version: 2.0                                                                    //
 //  Year: 2022                                                                      //
-//  Authors: D. Pizzocri, G. Zullo, A. Magni, E. Redaelli                           //
+//  Authors: D. Pizzocri, G. Zullo.                                                 //
 //                                                                                  //
 //////////////////////////////////////////////////////////////////////////////////////
 
-#include "Xe_in_UO2HBS.h"
+#include "Densification.h"
 
-void Xe_in_UO2HBS()
-{
-	/// @brief
-	/// Xe_in_UO2HBS
-	/// ------------
-	///
-	/// Here, the system "xenon in UO2-HBS" properties (e.g., diffusivity, resolution rate and trapping rate) are set.
-	sciantix_system.emplace_back();
-	int index = int(sciantix_system.size()) - 1;
+void Densification()
+{	
+	/**
+	 * @brief This function defines the sciantix model *Densification*.
+	 * 
+	 *
+	 * @author Arianna Pagani
+	 */ 
 
-	sciantix_system[index].setName("Xe in UO2HBS");
-	sciantix_system[index].setGasName("Xe");
-	sciantix_system[index].setYield(0.24);
-	sciantix_system[index].setRadiusInLattice(0.21e-9);
-	sciantix_system[index].setVolumeInLattice(matrix[sma["UO2HBS"]].getSchottkyVolume());
-	sciantix_system[index].setHenryConstant(0.0);
-	sciantix_system[index].setProductionRate(1);
-	sciantix_system[index].setFissionGasDiffusivity(5); // fission gas in HBS
-	sciantix_system[index].setResolutionRate(99);
-	sciantix_system[index].setTrappingRate(99);
-	sciantix_system[index].setNucleationRate(99);
+	model.emplace_back();
+	int model_index = int(model.size()) - 1;
+	model[model_index].setName("Densification");
+
+	std::vector<double> parameter;
+
+	parameter.push_back(2);	/*Decay rate*/
+	parameter.push_back(0.009*exp(0.0035*history_variable[hv["Temperature"]].getFinalValue()));	/*Source term*/
+
+	model[model_index].setParameter(parameter);
+	model[model_index].setRef("Megafit da PVU PhD");
 }
+
+
 

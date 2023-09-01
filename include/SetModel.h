@@ -23,6 +23,7 @@
 #include "SystemDeclaration.h"
 #include "SolverDeclaration.h"
 #include "PhysicsVariableDeclaration.h"
+
 #include "MapInputVariable.h"
 #include "MapHistoryVariable.h"
 #include "MapPhysicsVariable.h"
@@ -31,6 +32,7 @@
 #include "MapMatrix.h"
 #include "MapSciantixVariable.h"
 #include "MapSystem.h"
+
 #include "GrainGrowth.h"
 #include "GrainBoundarySweeping.h"
 #include "GasProduction.h"
@@ -42,13 +44,13 @@
 #include "GrainBoundaryMicroCracking.h"
 #include "GrainBoundaryVenting.h"
 #include "HighBurnupStructureFormation.h"
-#include "StoichiometryDeviation.h"
-#include "EnvironmentComposition.h"
-#include "UO2Thermochemistry.h"
 #include "Porosity.h"
 #include "SolidSwelling.h"
+#include "Densification.h"
 #include "ErrorMessages.h"
+
 #include <iostream>
+
 #include <cmath>
 
 void SetModel();

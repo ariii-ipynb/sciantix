@@ -175,15 +175,10 @@ void InputReading()
 	 * 	0= no evolution of HBS porosity,
 	 * 	1= HBS porosity evolution based on Spino et al. (2006) data
 	 * 
-	 * iStoichiometryDeviation
-	 * 	0= 
-	 * 	1= 
-	 * 	2= 
-	 * 
-	 * iBubbleDiffusivity
-	 * 	0= 
-	 * 	1= 
-	 * 	2= 
+	 * iHeliumProductionRate
+	 * 	0= no production
+	 * 	1= from ternary fissions
+	 * 	2= linear with burnup (FR conditions)
 	 */
 
 	Sciantix_options[0] = ReadOneSetting("iGrainGrowth", input_settings, input_check);
@@ -207,13 +202,10 @@ void InputReading()
 	Sciantix_options[18] = ReadOneSetting("iHBS_FGDiffusionCoefficient", input_settings, input_check);
 	Sciantix_options[19] = ReadOneSetting("iHighBurnupStructurePorosity", input_settings, input_check);
 	Sciantix_options[20] = ReadOneSetting("iHeliumProductionRate", input_settings, input_check);
-	Sciantix_options[21] = ReadOneSetting("iStoichiometryDeviation", input_settings, input_check);
-	Sciantix_options[22] = ReadOneSetting("iBubbleDiffusivity",input_settings,input_check);
-	Sciantix_options[23] = ReadOneSetting("iPorosity",input_settings,input_check);
 
 	if (!input_initial_conditions.fail())
 	{
-		Sciantix_variables[0] = ReadOneParameter("Grain radius[0]", input_initial_conditions, input_check);
+		Sciantix_variables[0] = ReadOneParameter("Grain_radius[0]", input_initial_conditions, input_check);
 
 		std::vector<double> initial_composition_Xe;
 		initial_composition_Xe = ReadSeveralParameters("Initial composition Xe", input_initial_conditions, input_check);
@@ -249,8 +241,7 @@ void InputReading()
 
 		Sciantix_variables[38] = ReadOneParameter("Burn_up[0]", input_initial_conditions, input_check);
 		Sciantix_variables[39] = ReadOneParameter("Effective_burn_up[0]", input_initial_conditions, input_check);
-		Sciantix_variables[65] = ReadOneParameter("Irradiation_time[0]", input_initial_conditions, input_check);
-		// Sciantix_variables[40] = ReadOneParameter("Fuel_density[0]", input_initial_conditions, input_check);
+		Sciantix_variables[40] = ReadOneParameter("Fuel_density[0]", input_initial_conditions, input_check);
 
 		std::vector<double> initial_composition_U;
 		initial_composition_U = ReadSeveralParameters("Initial composition U", input_initial_conditions, input_check);
@@ -283,8 +274,7 @@ void InputReading()
 		Sciantix_variables[62] = initial_composition_Kr85m[5];
 		Sciantix_variables[63] = initial_composition_Kr85m[6];
 
-		Sciantix_variables[66] = ReadOneParameter("Initial stoichiometry deviation[0]", input_initial_conditions, input_check);
-		Sciantix_variables[70] = ReadOneParameter("Fabrication porosity[0]", input_initial_conditions, input_check);
+		Sciantix_variables[66] = ReadOneParameter("Fabrication porosity", input_initial_conditions, input_check);
 	}
 
 	int n = 0;
@@ -295,17 +285,10 @@ void InputReading()
 		input_history >> Fissionrate_input[n];
 		input_history >> Hydrostaticstress_input[n];
 
-		if(Sciantix_options[21] > 0)
-			input_history >> Steampressure_input[n];
-
 		input_check << Time_input[n] << "\t";
 		input_check << Temperature_input[n] << "\t";
 		input_check << Fissionrate_input[n] << "\t";
 		input_check << Hydrostaticstress_input[n] << "\t";
-
-		if(Sciantix_options[21] > 0)
-			input_check << Steampressure_input[n] << "\t";
-
 		input_check << std::endl;
 
 		n++;
@@ -316,9 +299,6 @@ void InputReading()
 	Temperature_input.resize(Input_history_points);
 	Fissionrate_input.resize(Input_history_points);
 	Hydrostaticstress_input.resize(Input_history_points);
-		
-	if(Sciantix_options[21] > 0)
-		Steampressure_input.resize(Input_history_points);
 
 	Time_end_h = Time_input[Input_history_points - 1];
 	Time_end_s = Time_end_h * 3600.0;

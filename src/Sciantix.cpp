@@ -24,84 +24,68 @@ void Sciantix(int Sciantix_options[],
 {
 	SetVariables(Sciantix_options, Sciantix_history, Sciantix_variables, Sciantix_scaling_factors, Sciantix_diffusion_modes);
 
-	SetGas();
-
 	SetMatrix();
+
+	SetGas();
 
 	SetSystem();
 
 	Simulation sciantix_simulation;
 
-	Burnup();
-	MapModel();
+
+	// std::cout << sciantix_variable[sv["Fabrication porosity"]].getFinalValue() << std::endl;
+
+	Burnup(); 									  									MapModel();
 	sciantix_simulation.Burnup();
 
-	EffectiveBurnup();
-	MapModel();
+	EffectiveBurnup();                             	MapModel();
 	sciantix_simulation.EffectiveBurnup();
 
-	EnvironmentComposition();
-	MapModel();
+	Densification();																MapModel();
+	sciantix_simulation.Densification();
 
-	UO2Thermochemistry();
-	MapModel();
-	sciantix_simulation.UO2Thermochemistry();
+	Porosity();																		  MapModel();
 
-	StoichiometryDeviation();
-	MapModel();
-	sciantix_simulation.StoichiometryDeviation(); 
-
-	HighBurnupStructureFormation();
-	MapModel();
-	sciantix_simulation.HighBurnupStructureFormation();
-
-	HighBurnupStructurePorosity();
-	MapModel();
-	sciantix_simulation.HighBurnupStructurePorosity();
-
-	GrainGrowth();
-	MapModel();
+	GrainGrowth();                                 	MapModel();
 	sciantix_simulation.GrainGrowth();
 
-	GrainBoundarySweeping();
-	MapModel();
+	GrainBoundarySweeping();                       	MapModel();
 	sciantix_simulation.GrainBoundarySweeping();
 
-	GasProduction();
-	MapModel();
+	GasProduction();                            		MapModel();
 	sciantix_simulation.GasProduction();
 
 	sciantix_simulation.GasDecay();
 
-	IntraGranularBubbleEvolution();
-	MapModel();
+	IntraGranularBubbleEvolution();          				MapModel();
 	sciantix_simulation.IntraGranularBubbleBehaviour();
 
-	GasDiffusion();
-	MapModel();
+	GasDiffusion();                                	MapModel();
 	sciantix_simulation.GasDiffusion();
 
-	SolidSwelling();
-	sciantix_simulation.SolidSwelling();
-
-	Porosity();
-	MapModel();
+	//AthermalRelease();															MapModel();
 	sciantix_simulation.AthermalRelease();
 
-	GrainBoundaryMicroCracking();
-	MapModel();
+	SolidSwelling();																MapModel();
+	sciantix_simulation.SolidSwelling();
+
+	GrainBoundaryMicroCracking();                  	MapModel();
 	sciantix_simulation.GrainBoundaryMicroCracking();
 
-	GrainBoundaryVenting();
-	MapModel();
+	GrainBoundaryVenting();                        	MapModel();
 	sciantix_simulation.GrainBoundaryVenting();
 
-	InterGranularBubbleEvolution();
-	MapModel();
-	sciantix_simulation.InterGranularBubbleBehaviour();
+	InterGranularBubbleEvolution();                	MapModel();
+	sciantix_simulation.InterGranularBubbleBehaviour();	
+
+	/*std::cout << sciantix_variable[sv["Solid swelling"]].getFinalValue() << std::endl;*/
+	/*std::cout << sciantix_variable[sv["Intragranular gas swelling"]].getFinalValue() << std::endl;*/
+	/*std::cout << history_variable[hv["Fission rate"]].getFinalValue() << std::endl;*/
+
+	DensityUpdate();                             		MapModel();
 
 	FiguresOfMerit();
-	
+
 	UpdateVariables(Sciantix_variables, Sciantix_diffusion_modes);
 
 	Output();

@@ -24,7 +24,6 @@ void Xenon()
 	int index = int(gas.size()) - 1;
 	gas[index].setName("Xe");
 	gas[index].setAtomicNumber(54);
-	gas[index].setMassNumber(135);
 	gas[index].setVanDerWaalsVolume(8.48e-29);
 	gas[index].setDecayRate(0.0);
 	gas[index].setPrecursorFactor(1.00);

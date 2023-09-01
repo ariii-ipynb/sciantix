@@ -19,7 +19,7 @@
 clock_t timer, timer_time_step;
 
 int    Sciantix_options[40];
-double Sciantix_history[20];
+double Sciantix_history[9];
 double Sciantix_variables[300];
 double Sciantix_scaling_factors[10];
 double Sciantix_diffusion_modes[1000];
@@ -37,4 +37,3 @@ std::vector<double> Time_input(1000, 0.0);
 std::vector<double> Temperature_input(1000, 0.0);
 std::vector<double> Fissionrate_input(1000, 0.0);
 std::vector<double> Hydrostaticstress_input(1000, 0.0);
-std::vector<double> Steampressure_input(1000, 0.0);

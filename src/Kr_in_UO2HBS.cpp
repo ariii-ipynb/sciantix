@@ -31,7 +31,6 @@ void Kr_in_UO2HBS()
 	sciantix_system[index].setHenryConstant(0.0);
 	sciantix_system[index].setProductionRate(1);
 	sciantix_system[index].setFissionGasDiffusivity(5);
-	sciantix_system[index].setBubbleDiffusivity(0);
 	sciantix_system[index].setResolutionRate(99);
 	sciantix_system[index].setTrappingRate(99);
 	sciantix_system[index].setNucleationRate(99);
