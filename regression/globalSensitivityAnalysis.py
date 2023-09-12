@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 subfolder_name = "GSA_output_files"
 option_runSensitivity = False
-samplings = 50
+samplings = 100
 validation_database = "Baker"
 sciantix_variable = "Intragranular gas swelling (/)"
 
@@ -80,13 +80,15 @@ class globalSensitivityAnalysis():
         print(f"{self.folder_number} folders have been found!")
 
 
-    def apply_bias(self,deviation,feature):
-        if feature == "above":
-            bias = random.uniform(1, 1 + deviation)
-        if feature == "around":
+    def apply_bias(self):
+        if self.feature == "above":
+            bias = random.uniform(1, 1 + self.deviation)
+        if self.feature == "around":
             bias = random.uniform(1 - self.deviation, 1 + self.deviation)
-        if feature == "below":
-            bias = random.uniform(1 - deviation, 1)
+        if self.feature == "below":
+            bias = random.uniform(1 - self.deviation, 1)
+        if self.feature == "log10":
+            bias = random.uniform(10**(-self.deviation), 10**(self.deviation))
 
         return bias
     
@@ -130,8 +132,7 @@ class globalSensitivityAnalysis():
 
                     print(i, j)
 
-                    #bias = random.uniform(1 - self.deviation, 1 + self.deviation)
-                    bias = self.apply_bias(self.deviation, self.feature)
+                    bias = self.apply_bias()
                     self.scaling_factors[self.bias_name] = bias
 
                     with open("input_scaling_factors.txt", 'w') as sf_file:
@@ -237,12 +238,12 @@ class globalSensitivityAnalysis():
         # print("mean k :", self.global_sensitivity_coefficients)
 
         # Calculate the averaged-test global sensitivity coefficients 
-        self.global_sensitivity_coefficients = (np.max(self.sensitivity_coefficient_map, axis=1) - np.min(self.sensitivity_coefficient_map, axis=1)) / (np.max(self.scaling_factor_map, axis=1) - np.min(self.scaling_factor_map, axis=1))
-        print("ΔK/ΔSF : ", self.global_sensitivity_coefficients)
+        self.global_sensitivity_coefficients = (np.max(self.sensitivity_coefficient_map, axis=1) + np.min(self.sensitivity_coefficient_map, axis=1)) / 2
+        print("GSA-K : ", self.global_sensitivity_coefficients)
 
         # Calculate the sum of k_over_sf divided by the number of its elements (i.e., the average)
         self.ranking_parameters = np.mean(self.global_sensitivity_coefficients)
-        print("Ranking parameters: ", self.ranking_parameters)
+        print("Ranking parameter: ", self.ranking_parameters)
 
         # Create a scatter plot for the global sensitivity coefficients (delta)
         fig, ax = plt.subplots()
@@ -322,8 +323,8 @@ validation_parameters = [
         "variable_name": sciantix_variable,
         "validation_name": validation_database,
         "bias_name": "diffusivity",
-        "deviation": 0.5,
-        "feature": "around",
+        "deviation": 1,
+        "feature": "log10",
         "sample_number": samplings
     },
     {
