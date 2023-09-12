@@ -1,4 +1,4 @@
-1.0928207876624259
+1.0
 # scaling factor - resolution rate
 1.0
 # scaling factor - trapping rate
