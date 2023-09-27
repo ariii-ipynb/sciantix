@@ -202,6 +202,7 @@ void InputReading()
 	Sciantix_options[18] = ReadOneSetting("iHBS_FGDiffusionCoefficient", input_settings, input_check);
 	Sciantix_options[19] = ReadOneSetting("iHighBurnupStructurePorosity", input_settings, input_check);
 	Sciantix_options[20] = ReadOneSetting("iHeliumProductionRate", input_settings, input_check);
+	Sciantix_options[21] = ReadOneSetting("iSolidSwelling", input_settings, input_check);
 
 	if (!input_initial_conditions.fail())
 	{

@@ -138,6 +138,10 @@ void SetVariables(int Sciantix_options[], double Sciantix_history[], double Scia
 		input_variable[iv_counter].setValue(Sciantix_options[20]);
 		++iv_counter;
 
+		input_variable.emplace_back();
+		input_variable[iv_counter].setName("iSolidSwelling");
+		input_variable[iv_counter].setValue(Sciantix_options[21]);
+		++iv_counter;
 	}
 
 	MapInputVariable();
@@ -731,6 +735,14 @@ void SetVariables(int Sciantix_options[], double Sciantix_history[], double Scia
 	sciantix_variable[sv_counter].setUOM("(/)");
 	sciantix_variable[sv_counter].setInitialValue(0);
 	sciantix_variable[sv_counter].setFinalValue(Sciantix_variables[72]);
+	sciantix_variable[sv_counter].setOutput(1);
+	++sv_counter;
+
+		sciantix_variable.emplace_back();
+	sciantix_variable[sv_counter].setName("Kr solid swelling");
+	sciantix_variable[sv_counter].setUOM("(/)");
+	sciantix_variable[sv_counter].setInitialValue(0);
+	sciantix_variable[sv_counter].setFinalValue(Sciantix_variables[80]);
 	sciantix_variable[sv_counter].setOutput(1);
 	++sv_counter;
 
