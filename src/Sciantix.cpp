@@ -32,6 +32,7 @@ void Sciantix(int Sciantix_options[],
 
 	Simulation sciantix_simulation;
 
+	// std::cout << "lauree" << std::endl;
 
 	// std::cout << sciantix_variable[sv["Fabrication porosity"]].getFinalValue() << std::endl;
 

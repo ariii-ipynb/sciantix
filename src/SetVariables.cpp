@@ -142,6 +142,16 @@ void SetVariables(int Sciantix_options[], double Sciantix_history[], double Scia
 		input_variable[iv_counter].setName("iSolidSwelling");
 		input_variable[iv_counter].setValue(Sciantix_options[21]);
 		++iv_counter;
+
+		input_variable.emplace_back();
+		input_variable[iv_counter].setName("iDensification");
+		input_variable[iv_counter].setValue(Sciantix_options[22]);
+		++iv_counter;
+
+  	input_variable.emplace_back();
+		input_variable[iv_counter].setName("iPorosity");
+		input_variable[iv_counter].setValue(Sciantix_options[23]);
+		++iv_counter; 
 	}
 
 	MapInputVariable();
@@ -813,7 +823,7 @@ void SetVariables(int Sciantix_options[], double Sciantix_history[], double Scia
 	sciantix_variable.emplace_back();
 	sciantix_variable[sv_counter].setName("Open porosity");
 	sciantix_variable[sv_counter].setUOM("(/)");
-	sciantix_variable[sv_counter].setInitialValue(Sciantix_variables[68]);
+	sciantix_variable[sv_counter].setInitialValue(0.0);
 	sciantix_variable[sv_counter].setFinalValue(Sciantix_variables[68]);
 	sciantix_variable[sv_counter].setOutput(1);
 	++sv_counter;

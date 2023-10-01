@@ -31,8 +31,22 @@ void Densification()
 
 	std::vector<double> parameter;
 
-	parameter.push_back(2);	/*Decay rate*/
-	parameter.push_back(0.009*exp(0.0035*history_variable[hv["Temperature"]].getFinalValue()));	/*Source term*/
+	switch (int(input_variable[iv["iDensification"]].getValue()))
+	{
+		case 0:
+		{
+			parameter.push_back(0);
+			parameter.push_back(0);	/*Source term*/
+		}		
+		break;
+		case 1:
+		{	
+			parameter.push_back(2);	/*Decay rate*/
+			parameter.push_back(0.009*exp(0.0035*history_variable[hv["Temperature"]].getFinalValue()));	/*Source term*/
+		}
+		break;
+	}
+
 
 	model[model_index].setParameter(parameter);
 	model[model_index].setRef("Megafit da PVU PhD");

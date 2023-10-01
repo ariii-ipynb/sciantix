@@ -31,9 +31,8 @@ void SolidSwelling()
 	model.emplace_back();
 	int model_index = int(model.size()) - 1;
 	model[model_index].setName("Solid swelling");
-  // switch (int(input_variable[iv["iSolidSwelling"]].getValue()))
-	// { 
-    // case 0;
+
+
 	std::vector<double> parameter;
 
   const double N_av = CONSTANT_NUMBERS_H::PhysicsConstants::avogadro_number;
@@ -72,23 +71,42 @@ void SolidSwelling()
   const double swell_AEO = y_AEO * (v_AEO / v_U);
   const double swell_Oth = y_Oth * (v_Oth / v_U);
 
-  const double swell_TOT = (swell_SOL + swell_MI + swell_AEO + swell_Oth) - 1.0; 
+  
+  double swell_TOT  = (swell_SOL + swell_MI + swell_AEO + swell_Oth) - 1.0;  
+  double corr_fact = 1.072;
 
+
+  switch (int(input_variable[iv["iSolidSwelling"]].getValue()))
+  { 
+    case 0: 
+    {
+      swell_TOT = 0;
+      corr_fact = 0;
+      break;
+    }
+
+      case 1:
+      {
+      swell_TOT = swell_TOT;
+      corr_fact = corr_fact;
+      break;
+      }
+  }
 
 	sciantix_variable[sv["Solid swelling"]].setFinalValue(
 				sciantix_variable[sv["FIMA"]].getFinalValue() * swell_TOT/ 100);
 
 	sciantix_variable[sv["Xe solid swelling"]].setFinalValue(
-				sciantix_variable[sv["Xe in intragranular solution"]].getFinalValue() / (sciantix_variable[sv["U"]].getFinalValue()) * 1.072 // maybe uo2
+				sciantix_variable[sv["Xe in intragranular solution"]].getFinalValue() / (sciantix_variable[sv["U"]].getFinalValue()) * corr_fact // maybe uo2
 		);
   
   sciantix_variable[sv["Kr solid swelling"]].setFinalValue(
-				sciantix_variable[sv["Kr in intragranular solution"]].getFinalValue() / (sciantix_variable[sv["U"]].getFinalValue()) * 1.072 // maybe uo2
+				sciantix_variable[sv["Kr in intragranular solution"]].getFinalValue() / (sciantix_variable[sv["U"]].getFinalValue()) * corr_fact // maybe uo2
 		); 
 
 
 	parameter.push_back(swell_TOT);
-
-	model[model_index].setParameter(parameter);
-	model[model_index].setRef("Olander, D. R. Fundamental aspects of nuclear reactor fuel elements. 1976.");
+  model[model_index].setParameter(parameter);
+  
+  model[model_index].setRef("Olander, D. R. Fundamental aspects of nuclear reactor fuel elements. 1976.");
 }

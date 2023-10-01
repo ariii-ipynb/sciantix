@@ -40,41 +40,53 @@ void Porosity()
 
 	sciantix_variable[sv["Athermal venting factor"]].setFinalValue(athermalVentingFactor(sciantix_variable[sv["Open porosity"]].getFinalValue()));
 
+	if (history_variable[hv["Time"]].getFinalValue() == 0)
+		{sciantix_variable[sv["Open porosity"]].setFinalValue(openPorosity(sciantix_variable[sv["Fabrication porosity"]].getFinalValue()));
+		}
 	parameter.push_back(athermalVentingFactor(sciantix_variable[sv["Open porosity"]].getFinalValue()));
 
 	model[model_index].setParameter(parameter);
 	model[model_index].setRef("Claisse et al. Journal of Nuclear Materials 466 (2015) 351-356.");
 }
 
-/*
 double openPorosity(double fabrication_porosity)
 {
-	/**
+	/*
+	 *
 	 * @brief This function evaluates the sciantix_variable "Open porosity" according to the value of fabrication porosity 
 	 * @ref **Claisse et al. Journal of Nuclear Materials 466 (2015) 351-356**
 	 * 
 	 * @author A. Pagani
 	 * 
-	 * /
-
-	if (fabrication_porosity <= 1.0)
+	 */
+	switch (int(input_variable[iv["iPorosity"]].getValue()))
 	{
-		const bool check1 = (fabrication_porosity < 0.050) ? 1 : 0;
-		const bool check2 = (fabrication_porosity > 0.058) ? 1 : 0;
+	case 0:
+		return(0);
+		break;
+	
+		case 1:
+		{
+		if (fabrication_porosity <= 1.0)
+		{
+			const bool check1 = (fabrication_porosity < 0.050) ? 1 : 0;
+			const bool check2 = (fabrication_porosity > 0.058) ? 1 : 0;
 
-		return(
-			(fabrication_porosity / 20) * (check1) + 
-			(3.10 * fabrication_porosity - 0.1525) * (!check1 && !check2) + 
-			(fabrication_porosity / 2.1 - 3.2e-4) * (check2)
-		);
+			return(
+				(fabrication_porosity / 20) * (check1) + 
+				(3.10 * fabrication_porosity - 0.1525) * (!check1 && !check2) + 
+				(fabrication_porosity / 2.1 - 3.2e-4) * (check2)
+			);
+		}
+		else
+		{
+			std::cout << "ERROR: invalid fabrication porosity value!" << std::endl;
+			return(0);
+		}
+		}	
+		break;
 	}
-	else
-	{
-		std::cout << "ERROR: invalid fabrication porosity value!" << std::endl;
-		return 0;
-	}
-}*/
-
+}
 double athermalVentingFactor(double open_p)
 {
 	/**

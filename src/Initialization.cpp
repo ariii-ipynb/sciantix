@@ -61,27 +61,6 @@ void Initialization()
 	// Initial solid density = theoretical density
 	Sciantix_variables[69] = 10970.0;
 
-	double fabrication_porosity = Sciantix_variables[66];
-	double open_porosity;
-
-	if (fabrication_porosity <= 1.0)
-	{
-		const bool check1 = (fabrication_porosity < 0.050) ? 1 : 0;
-		const bool check2 = (fabrication_porosity > 0.058) ? 1 : 0;
-
-		open_porosity = 
-			(fabrication_porosity / 20) * (check1) + 
-			(3.10 * fabrication_porosity - 0.1525) * (!check1 && !check2) + 
-			(fabrication_porosity / 2.1 - 3.2e-4) * (check2);
-	}
-	else
-	{
-		open_porosity = 0.0;
-		std::cout << "ERROR: invalid fabrication porosity value!" << std::endl;
-	}
-	Sciantix_variables[68] = open_porosity;
-
-
 	// Projection on diffusion modes of the initial conditions
 	double initial_condition(0.0);
 	double projection_remainder(0.0);
