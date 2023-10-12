@@ -93,6 +93,7 @@ void UpdateVariables(double Sciantix_variables[], double Sciantix_diffusion_mode
 	Sciantix_variables[71] = sciantix_variable[sv["Solid swelling"]].getFinalValue();
 	Sciantix_variables[72] = sciantix_variable[sv["Xe solid swelling"]].getFinalValue();
 	Sciantix_variables[80] = sciantix_variable[sv["Densification factor"]].getFinalValue();
+	Sciantix_variables[81] = sciantix_variable[sv["FIMA"]].getFinalValue();
 
 	for (int i = 0; i < n_modes; ++i)
 	{

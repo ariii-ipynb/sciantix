@@ -53,6 +53,7 @@ public:
 		const double N_av = CONSTANT_NUMBERS_H::PhysicsConstants::avogadro_number;
 		const double E_fiss = CONSTANT_NUMBERS_H::ConstantParameters::E_fiss;
 		const double M_U = CONSTANT_NUMBERS_H::ConstantParameters::MM_U235;
+	
 
 		/// @brief Burnup uses the solver Integrator to computes the fuel burnup from the local power density.
 		/// This method is called in Sciantix.cpp, after the definition of the Burnup model.
@@ -63,11 +64,11 @@ public:
 				physics_variable[pv["Time step"]].getFinalValue()
 			)
 		);
-		
+
 		sciantix_variable[sv["FIMA"]].setFinalValue(
-			history_variable[hv["Fission rate"]].getFinalValue() * history_variable[hv["Time"]].getFinalValue() * 3.6e5 / 
-			sciantix_variable[sv["U"]].getFinalValue()
+			sciantix_variable[sv["Burnup"]].getFinalValue() / 9.5
 		);
+
 	
 		if(history_variable[hv["Fission rate"]].getFinalValue() > 0.0)
 			sciantix_variable[sv["Irradiation time"]].setFinalValue(
@@ -75,10 +76,7 @@ public:
 						sciantix_variable[sv["Burnup"]].getInitialValue(),
 						model[sm["Burnup"]].getParameter().at(0),
 						physics_variable[pv["Time step"]].getFinalValue()));
-
-		sciantix_variable[sv["FIMA"]].setFinalValue(
-				history_variable[hv["Fission rate"]].getFinalValue() * history_variable[hv["Time"]].getFinalValue() * 3.6e5 /
-				sciantix_variable[sv["U"]].getFinalValue());
+			
 
 		if (history_variable[hv["Fission rate"]].getFinalValue() > 0.0)
 			sciantix_variable[sv["Irradiation time"]].setFinalValue(
@@ -791,9 +789,18 @@ public:
 
 	void SolidSwelling()
 	{
+		sciantix_variable[sv["Intragranular swelling"]].setFinalValue(
+			sciantix_variable[sv["Xe solid swelling"]].getFinalValue() +
+			sciantix_variable[sv["Kr solid swelling"]].getFinalValue() + 
+			sciantix_variable[sv["Intragranular gas swelling"]].getFinalValue()
+		);
+
 		sciantix_variable[sv["Solid density"]].setFinalValue(
-				matrix[sma["UO2"]].getTheoreticalDensity() /
-				(1.0 + sciantix_variable[sv["Solid swelling"]].getFinalValue() + sciantix_variable[sv["Xe solid swelling"]].getFinalValue()));
+			matrix[sma["UO2"]].getTheoreticalDensity() /
+			(1.0 + sciantix_variable[sv["Solid swelling"]].getFinalValue() + 
+			sciantix_variable[sv["Xe solid swelling"]].getFinalValue() + 
+			sciantix_variable[sv["Kr solid swelling"]].getFinalValue())
+		);
 	}
 
 	void GrainBoundaryVenting()
