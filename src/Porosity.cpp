@@ -61,30 +61,63 @@ double openPorosity(double fabrication_porosity)
 	 */
 	switch (int(input_variable[iv["iPorosity"]].getValue()))
 	{
-	case 0:
+		case 0:
 		return(0);
 		break;
 	
 		case 1:
 		{
-		if (fabrication_porosity <= 1.0)
-		{
-			const bool check1 = (fabrication_porosity < 0.050) ? 1 : 0;
-			const bool check2 = (fabrication_porosity > 0.058) ? 1 : 0;
+			if (fabrication_porosity <= 1.0)
+			{
+				const bool check1 = (fabrication_porosity < 0.050) ? 1 : 0;
+				const bool check2 = (fabrication_porosity > 0.058) ? 1 : 0;
 
-			return(
-				(fabrication_porosity / 20) * (check1) + 
-				(3.10 * fabrication_porosity - 0.1525) * (!check1 && !check2) + 
-				(fabrication_porosity / 2.1 - 3.2e-4) * (check2)
-			);
-		}
-		else
-		{
-			std::cout << "ERROR: invalid fabrication porosity value!" << std::endl;
-			return(0);
-		}
+				return(
+					(fabrication_porosity / 20) * (check1) + 
+					(3.10 * fabrication_porosity - 0.1525) * (!check1 && !check2) + 
+					(fabrication_porosity / 2.1 - 3.2e-4) * (check2)
+				);
+			}
+			else
+			{
+				std::cout << "ERROR: invalid fabrication porosity value!" << std::endl;
+				return(0);
+			}
 		}	
 		break;
+
+		case 2:
+		{
+			if (fabrication_porosity <= 1.0)
+			{
+        double x1_step1[3] = {0.0309254289000001, 50.5545836563236, -1};
+        double b1 = -0.76352583531298012787;
+        double IW1_1 = 2.4890484320254797623;
+        double b2 = 0.030657996141059989936;
+        double LW2_1 = 1.003372825212876851;
+        double y1_step1[3] = {-1, 63.2911366167282, 0.00091428483};
+    
+
+        fabrication_porosity = (fabrication_porosity - x1_step1[0]) * x1_step1[1] + x1_step1[2];
+				double n = b1 + IW1_1 * fabrication_porosity;
+				double a1 = 2 / (1 + exp(-2 * n)) - 1;
+				double a2 = b2 + LW2_1 * a1;
+				double p_open = (a2 - y1_step1[0]) / y1_step1[1] + y1_step1[2];
+
+				return(p_open);
+			}
+			else
+			{
+				std::cout << "ERROR: invalid fabrication porosity value!" << std::endl;
+				return(0);
+			}
+		}	
+		break;
+
+		default:
+			ErrorMessages::Switch("Porosity.cpp", "iPorosity", int(input_variable[iv["iPorosity"]].getValue()));
+			break;
+
 	}
 }
 double athermalVentingFactor(double open_p)
