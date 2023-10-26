@@ -42,7 +42,7 @@ void Densification()
 		case 1:
 		{	
 			parameter.push_back(2);	/*Decay rate*/
-			parameter.push_back(0.009*exp(0.0035*history_variable[hv["Temperature"]].getFinalValue()));	/*Source term*/
+			parameter.push_back(0.006*exp(0.002*history_variable[hv["Temperature"]].getFinalValue()));	/*Source term*/
 		}
 		break;
 	}
