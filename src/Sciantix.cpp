@@ -42,6 +42,8 @@ void Sciantix(int Sciantix_options[],
 	EffectiveBurnup();                             	MapModel();
 	sciantix_simulation.EffectiveBurnup();
 
+	//std::cout << "HBD Alessio Magni" << std::endl;
+
 	Densification();																MapModel();
 	sciantix_simulation.Densification();
 
@@ -64,8 +66,10 @@ void Sciantix(int Sciantix_options[],
 	GasDiffusion();                                	MapModel();
 	sciantix_simulation.GasDiffusion();
 
-	//AthermalRelease();															MapModel();
+	//std::cout << "HBD Alessio Magni" << std::endl;
 	sciantix_simulation.AthermalRelease();
+
+	//std::cout << "HBD Alessio Magni" << std::endl;
 
 	SolidSwelling();																MapModel();
 	sciantix_simulation.SolidSwelling();

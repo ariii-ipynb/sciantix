@@ -85,4 +85,3 @@ Input setting #20: 	iHeliumProductionRate = 0
 Input setting #21: 	iSolidSwelling = 0
 Input setting #22: 	iDensification = 0
 Input setting #23: 	iPorosity = 0
-

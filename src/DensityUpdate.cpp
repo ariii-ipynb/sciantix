@@ -30,8 +30,8 @@ void DensityUpdate()
 
 	model[model_index].setName("Density Update");
 
-	sciantix_variable[sv["Fuel density"]].setFinalValue(
+	/*sciantix_variable[sv["Fuel density"]].setFinalValue(
 	sciantix_variable[sv["Solid density"]].getFinalValue() / (1.0 + sciantix_variable[sv["Porosity"]].getFinalValue())
-	);
+	);*/
 
 }
