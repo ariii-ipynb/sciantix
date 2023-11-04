@@ -38,8 +38,8 @@ void Porosity()
 	// std::cout << input_variable[iv["iAthermal"]].getValue() << std::endl;
 
 	/*sciantix_variable[sv["Open porosity"]].setFinalValue(openPorosity(sciantix_variable[sv["Fabrication porosity"]].getFinalValue()));*/ 
-	const double angle = 2 / 3 * 3.14;
-	double edge_length = 1/3 * 1.1 * 2 * sciantix_variable[sv["Grain radius"]].getFinalValue();
+	const double angle = 2.0 / 3.0 * 3.14;
+	double edge_length = 1.0/3.0 * 1.1 * 2.0 * sciantix_variable[sv["Grain radius"]].getFinalValue();
 
 	double ath_venting_factor = 
 		athermalVentingFactor(
@@ -184,7 +184,7 @@ double athermalVentingFactor(double open_p, double theta, double p, double l, do
         double o_gain = 2.14099254432474;
         double o_min = -1;
  
-        double input[] = { 2.0/3.0*3.14,  0.06,  5e-6,  20,  700,  1e19 };
+        double input[] = { theta,  p,  l,  bu,  T,  F };
  
         // Dimension
         const int n_neurons(10);
@@ -225,7 +225,7 @@ double athermalVentingFactor(double open_p, double theta, double p, double l, do
 				// std::cout << oo << std::endl;
 				double athermal_venting = 1.54 * sqrt(open_p);
 
-			//  std::cout << oo << std::endl;
+				std::cout << oo << std::endl;
 
 			 	return oo * athermal_venting;
 			}
