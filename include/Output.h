@@ -38,5 +38,6 @@
 #include "MapInputVariable.h"
 
 #include "MatrixDeclaration.h"
+#include "MainVariables.h"
 
 void Output();

@@ -18,8 +18,12 @@
 #include "HistoryVariableDeclaration.h"
 #include "ModelDeclaration.h"
 #include "SciantixScalingFactorDeclaration.h"
-
 #include "MapSciantixVariable.h"
 #include "MapHistoryVariable.h"
+#include "SetMatrix.h"
+#include "MatrixDeclaration.h"
+#include "MapMatrix.h"
+#include "SolverDeclaration.h"
+
 
 void GrainBoundaryVenting();

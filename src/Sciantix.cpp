@@ -32,10 +32,6 @@ void Sciantix(int Sciantix_options[],
 
 	Simulation sciantix_simulation;
 
-	// std::cout << "lauree" << std::endl;
-
-	// std::cout << sciantix_variable[sv["Fabrication porosity"]].getFinalValue() << std::endl;
-
 	Burnup(); 									  									MapModel();
 	sciantix_simulation.Burnup();
 
@@ -66,10 +62,7 @@ void Sciantix(int Sciantix_options[],
 	GasDiffusion();                                	MapModel();
 	sciantix_simulation.GasDiffusion();
 
-	//std::cout << "HBD Alessio Magni" << std::endl;
-	sciantix_simulation.AthermalRelease();
-
-	//std::cout << "HBD Alessio Magni" << std::endl;
+	// sciantix_simulation.AthermalRelease();
 
 	SolidSwelling();																MapModel();
 	sciantix_simulation.SolidSwelling();
@@ -79,13 +72,10 @@ void Sciantix(int Sciantix_options[],
 
 	GrainBoundaryVenting();                        	MapModel();
 	sciantix_simulation.GrainBoundaryVenting();
+	// std::cout << sciantix_variable[sv["Intergranular venting probability"]].getFinalValue() << std::endl;	
 
 	InterGranularBubbleEvolution();                	MapModel();
 	sciantix_simulation.InterGranularBubbleBehaviour();	
-
-	/*std::cout << sciantix_variable[sv["Solid swelling"]].getFinalValue() << std::endl;*/
-	/*std::cout << sciantix_variable[sv["Intragranular gas swelling"]].getFinalValue() << std::endl;*/
-	/*std::cout << history_variable[hv["Fission rate"]].getFinalValue() << std::endl;*/
 
 	DensityUpdate();                             		MapModel();
 
