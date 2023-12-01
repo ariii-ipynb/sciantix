@@ -44,7 +44,7 @@ void Sciantix(int Sciantix_options[],
 	sciantix_simulation.Densification();
 
 	Porosity();																		  MapModel();
-
+		
 	GrainGrowth();                                 	MapModel();
 	sciantix_simulation.GrainGrowth();
 
@@ -62,7 +62,7 @@ void Sciantix(int Sciantix_options[],
 	GasDiffusion();                                	MapModel();
 	sciantix_simulation.GasDiffusion();
 
-	// sciantix_simulation.AthermalRelease();
+	sciantix_simulation.AthermalRelease();
 
 	SolidSwelling();																MapModel();
 	sciantix_simulation.SolidSwelling();

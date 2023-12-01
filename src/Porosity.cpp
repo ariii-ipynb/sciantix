@@ -222,7 +222,7 @@ double athermalVentingFactor(double open_p, double theta, double p, double l, do
 
         oo = (oo - o_min) / o_gain + o_offset;
  
-				// std::cout << oo << std::endl;
+				
 				double athermal_venting = 1.54 * sqrt(open_p);
 
 				// std::cout << oo << std::endl;

@@ -180,7 +180,7 @@ void Output()
 	std::cout << sciantix_variable[sv["Intergranular fractional coverage"]].getFinalValue() << std::endl;
 	std::cout << sciantix_variable[sv["Intergranular saturation fractional coverage"]].getFinalValue() << std::endl;
     if ((sciantix_variable[sv["Intergranular fractional coverage"]].getFinalValue() == 
-              sciantix_variable[sv["Intergranular saturation fractional coverage"]].getFinalValue()))
+              sciantix_variable[sv["Intergranular saturation fractional coverage"]].getFinalValue()) && count == 0)
     { count += 1; 
         for (std::vector<HistoryVariable>::size_type i = 0; i != history_variable.size(); ++i)
         {

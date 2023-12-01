@@ -448,13 +448,14 @@ public:
 	{
 		// Gas is vented by subtracting a fraction of the gas concentration at grain boundaries arrived from diffusion
 		// Bf = Bf - f_ath * dB
+		
 		for (std::vector<System>::size_type i = 0; i != sciantix_system.size(); ++i)
 		{
-			sciantix_variable[sv[sciantix_system[i].getGasName() + " in intragranular bubbles"]].setFinalValue(
+			sciantix_variable[sv[sciantix_system[i].getGasName() + " at grain boundary"]].setFinalValue(
 					solver.Integrator(
-							sciantix_variable[sv[sciantix_system[i].getGasName() + " in intragranular bubbles"]].getFinalValue(),
-							-sciantix_variable[sv["Athermal venting factor"]].getFinalValue() * (),
-							sciantix_variable[sv[sciantix_system[i].getGasName() + " in intragranular bubbles"]].getIncrement()));
+							sciantix_variable[sv[sciantix_system[i].getGasName() + " at grain boundary"]].getFinalValue(),
+							-sciantix_variable[sv["Athermal venting factor"]].getFinalValue(),
+							sciantix_variable[sv[sciantix_system[i].getGasName() + " at grain boundary"]].getIncrement()));
 		}
 
 
@@ -796,7 +797,7 @@ public:
 		);
 
 		sciantix_variable[sv["Solid density"]].setFinalValue(
-			matrix[sma["UO2"]].getTheoreticalDensity() *
+			matrix[sma["UO2"]].getTheoreticalDensity() /
 			(1.0 + sciantix_variable[sv["Solid swelling"]].getFinalValue() + 
 			sciantix_variable[sv["Xe solid swelling"]].getFinalValue() + 
 			sciantix_variable[sv["Kr solid swelling"]].getFinalValue())
@@ -808,18 +809,31 @@ public:
 		if (!int(input_variable[iv["iGrainBoundaryVenting"]].getValue()))
 			return;
 
+		double sigmoid_variable;
+		sigmoid_variable = sciantix_variable[sv["Intergranular fractional coverage"]].getFinalValue() *
+											 exp(1.0 - sciantix_variable[sv["Intergranular fractional intactness"]].getFinalValue());
+
+		// Vented fraction
+		sciantix_variable[sv["Intergranular vented fraction"]].setFinalValue(
+				1.0 /
+				pow((1.0 + model[sm["Grain-boundary venting"]].getParameter().at(0) *
+											 exp(-model[sm["Grain-boundary venting"]].getParameter().at(1) *
+													 (sigmoid_variable - model[sm["Grain-boundary venting"]].getParameter().at(2)))),
+						(1.0 / model[sm["Grain-boundary venting"]].getParameter().at(0))));
+
+		// Venting probability
+		sciantix_variable[sv["Intergranular venting probability"]].setFinalValue(
+				(1.0 - sciantix_variable[sv["Intergranular fractional intactness"]].getFinalValue()) + sciantix_variable[sv["Intergranular fractional intactness"]].getFinalValue() * sciantix_variable[sv["Intergranular vented fraction"]].getFinalValue());
+
 		// Gas is vented by subtracting a fraction of the gas concentration at grain boundaries arrived from diffusion
 		// Bf = Bf - p_v * dB
 		for (std::vector<System>::size_type i = 0; i != sciantix_system.size(); ++i)
-		{
 			sciantix_variable[sv[sciantix_system[i].getGasName() + " at grain boundary"]].setFinalValue(
 					solver.Integrator(
 							sciantix_variable[sv[sciantix_system[i].getGasName() + " at grain boundary"]].getFinalValue(),
 							-sciantix_variable[sv["Intergranular venting probability"]].getFinalValue(),
 							sciantix_variable[sv[sciantix_system[i].getGasName() + " at grain boundary"]].getIncrement()));
-		}
 	}
-	
 
 	void HighBurnupStructurePorosity()
 	{
