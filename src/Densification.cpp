@@ -22,7 +22,7 @@ void Densification()
 	 * @brief This function defines the sciantix model *Densification*.
 	 * 
 	 *
-	 * @author Arianna Pagani
+	 * @author A. Pagani
 	 */ 
 
 	model.emplace_back();

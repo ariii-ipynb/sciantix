@@ -46,7 +46,7 @@ void Output()
 	std::string output_name = "output.txt";
 	std::fstream output_file;
 	output_file.open(output_name, std::fstream::in | std::fstream::out | std::fstream::app);
-
+	
 	/// @brief
 	/// iOutput == 1 --> output.txt organized in columns (header + values).
 	if (int(input_variable[iv["iOutput"]].getValue()) == 1)
@@ -121,10 +121,14 @@ void Output()
 		}
 	}
 	// std::cout << Time_end_h << std::endl;
-	/// @brief
-	/// iOutput == 3 --> only last time instance.
+	/**
+	 * @brief iOutput == 3 --> only last time instance.
+	 * @author A. Pagani
+	 * 
+	 */
 	else if (int(input_variable[iv["iOutput"]].getValue()) == 3)
-	{
+	{	
+		// std::cout << Nstep << std::endl;
 		if (history_variable[hv["Time step number"]].getFinalValue() == 0)
 		{
 			for (std::vector<HistoryVariable>::size_type i = 0; i != history_variable.size(); ++i)
@@ -139,7 +143,7 @@ void Output()
 			}
 			output_file << "\n";
 		}
-		if ((int)history_variable[hv["Time step number"]].getFinalValue() == 500)
+		if ((int)history_variable[hv["Time step number"]].getFinalValue() == Nstep)
 		{
 			for (std::vector<HistoryVariable>::size_type i = 0; i != history_variable.size(); ++i)
 			{
@@ -155,10 +159,13 @@ void Output()
 			output_file << "\n";
 		}
 	}
-	/// @brief
-	/// iOutput == 4 --> only when FC reaches saturation (0.5).
+	/**
+	 * @brief iOutput == 4 --> only up until FC reaches saturation (0.5).
+	 * @author A. Pagani
+	 * 
+	 */ 
 	else if (int(input_variable[iv["iOutput"]].getValue()) == 4)
-	{	double count = 0;
+	{	
     if (history_variable[hv["Time step number"]].getFinalValue() == 0)
     {
         for (std::vector<HistoryVariable>::size_type i = 0; i != history_variable.size(); ++i)
@@ -173,28 +180,22 @@ void Output()
         }
         output_file << "\n";
     }
-	bool check = (sciantix_variable[sv["Intergranular fractional coverage"]].getFinalValue() == 
-              sciantix_variable[sv["Intergranular saturation fractional coverage"]].getFinalValue());
-	std::cout << check << std::endl;
+		// firstSat comes from MainVariables
+		if (firstSat)
+		{	 
+			for (std::vector<HistoryVariable>::size_type i = 0; i != history_variable.size(); ++i)
+			{
+					if (history_variable[i].getOutput())
+							output_file << std::setprecision(10) << history_variable[i].getFinalValue() << "\t";
+			}
 
-	std::cout << sciantix_variable[sv["Intergranular fractional coverage"]].getFinalValue() << std::endl;
-	std::cout << sciantix_variable[sv["Intergranular saturation fractional coverage"]].getFinalValue() << std::endl;
-    if ((sciantix_variable[sv["Intergranular fractional coverage"]].getFinalValue() == 
-              sciantix_variable[sv["Intergranular saturation fractional coverage"]].getFinalValue()) && count == 0)
-    { count += 1; 
-        for (std::vector<HistoryVariable>::size_type i = 0; i != history_variable.size(); ++i)
-        {
-            if (history_variable[i].getOutput())
-                output_file << std::setprecision(10) << history_variable[i].getFinalValue() << "\t";
-        }
-
-        for (std::vector<SciantixVariable>::size_type i = 0; i != sciantix_variable.size(); ++i)
-        {
-            if (sciantix_variable[i].getOutput())
-                output_file << std::setprecision(7) << sciantix_variable[i].getFinalValue() << "\t";
-        }
-        output_file << "\n";
-    }
+			for (std::vector<SciantixVariable>::size_type i = 0; i != sciantix_variable.size(); ++i)
+			{
+					if (sciantix_variable[i].getOutput())
+							output_file << std::setprecision(7) << sciantix_variable[i].getFinalValue() << "\t";
+			}
+			output_file << "\n";
+		}
 	}	
 
 	output_file.close();

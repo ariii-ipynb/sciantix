@@ -22,10 +22,12 @@ void SolidSwelling()
 	/**
 	 * @brief This function defines the sciantix model *SolidSwelling*.
 	 * 
-	 * The model SolidSwelling is used to evaluate 
 	 * 
-	 * - SolidSwelling SolidSwelling
-   * 
+	 * 
+	 *
+   *
+	 * @author A. Pagani
+	 * 
 	 */
 
 	model.emplace_back();

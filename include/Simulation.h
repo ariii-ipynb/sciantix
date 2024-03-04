@@ -49,6 +49,11 @@ class Simulation : public Solver, public Model
 public:
 	void Burnup()
 	{
+		if ((float)sciantix_variable[sv["Intergranular fractional coverage"]].getInitialValue() == 
+		(float)sciantix_variable[sv["Intergranular saturation fractional coverage"]].getInitialValue())
+		{
+			firstSat = false;
+		}
 
 		const double N_av = CONSTANT_NUMBERS_H::PhysicsConstants::avogadro_number;
 		const double E_fiss = CONSTANT_NUMBERS_H::ConstantParameters::E_fiss;
@@ -433,15 +438,14 @@ public:
 		else
 			sciantix_variable[sv["Densification factor"]].setFinalValue(1);
 
-		// std::cout << model[sm["Densification"]].getParameter().at(0) << std::endl;
-		// std::cout << model[sm["Densification"]].getParameter().at(1) << std::endl;
-		// std::cout << sciantix_variable[sv["Densification factor"]].getFinalValue() << std::endl;
+		sciantix_variable[sv["Fabrication porosity"]].setFinalValue(
+			sciantix_variable[sv["Residual porosity"]].getFinalValue() + (sciantix_variable[sv["Fabrication porosity"]].getFinalValue() - 
+			sciantix_variable[sv["Residual porosity"]].getFinalValue()) * (1 - sciantix_variable[sv["Densification factor"]].getFinalValue())
+		);
 
-		sciantix_variable[sv["Fabrication porosity"]].setFinalValue(sciantix_variable[sv["Fabrication porosity"]].getFinalValue() *
-																																(1 - sciantix_variable[sv["Densification factor"]].getFinalValue()));
 
-		sciantix_variable[sv["Open porosity"]].setFinalValue(sciantix_variable[sv["Open porosity"]].getFinalValue() *
-																												 (1 - sciantix_variable[sv["Densification factor"]].getFinalValue()));
+		// sciantix_variable[sv["Open porosity"]].setFinalValue(sciantix_variable[sv["Open porosity"]].getFinalValue() *
+		// 																										 (1 - sciantix_variable[sv["Densification factor"]].getFinalValue()));
 	}
 
 	void AthermalRelease()

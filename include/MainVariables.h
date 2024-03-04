@@ -20,6 +20,8 @@
 #include <ctime>
 
 extern clock_t timer, timer_time_step;
+extern bool firstSat;
+extern const int Nstep;
 
 extern int Sciantix_options[40];
 extern double Sciantix_history[9];

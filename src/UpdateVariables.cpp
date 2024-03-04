@@ -90,6 +90,7 @@ void UpdateVariables(double Sciantix_variables[], double Sciantix_diffusion_mode
 	Sciantix_variables[67] = sciantix_variable[sv["Porosity"]].getFinalValue();
 	Sciantix_variables[68] = sciantix_variable[sv["Open porosity"]].getFinalValue();
 	Sciantix_variables[69] = sciantix_variable[sv["Solid density"]].getFinalValue();
+	Sciantix_variables[70] = sciantix_variable[sv["Residual porosity"]].getFinalValue();
 	Sciantix_variables[71] = sciantix_variable[sv["Solid swelling"]].getFinalValue();
 	Sciantix_variables[72] = sciantix_variable[sv["Xe solid swelling"]].getFinalValue();
 	Sciantix_variables[80] = sciantix_variable[sv["Densification factor"]].getFinalValue();

@@ -61,6 +61,9 @@ void Initialization()
 	// Initial solid density = theoretical density
 	Sciantix_variables[69] = 10970.0;
 
+	// Set the residual porosity
+	Sciantix_variables[70] = Sciantix_variables[66] * 0.75;
+	
 	// Projection on diffusion modes of the initial conditions
 	double initial_condition(0.0);
 	double projection_remainder(0.0);

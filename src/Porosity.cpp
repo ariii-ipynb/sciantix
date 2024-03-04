@@ -27,8 +27,11 @@ void Porosity()
 	 * - athermal venting factor (fraction of grain surface connected to open poristy)
 	 * 
 	 * according to fabrication porosity
+	 
+	 * @author A. Pagani
 	 * 
-	 */
+	 */ 
+	 
 
 	model.emplace_back();
 	int model_index = int(model.size()) - 1;
@@ -38,7 +41,7 @@ void Porosity()
 	// std::cout << input_variable[iv["iAthermal"]].getValue() << std::endl;
 
 	/*sciantix_variable[sv["Open porosity"]].setFinalValue(openPorosity(sciantix_variable[sv["Fabrication porosity"]].getFinalValue()));*/ 
-	const double angle = 2.0 / 3.0 * 3.14;
+	const double angle = 2.0 / 3.0 * 3.141592;
 	double edge_length = 1.0/3.0 * 1.1 * 2.0 * sciantix_variable[sv["Grain radius"]].getFinalValue();
 
 	double ath_venting_factor = 
@@ -53,19 +56,32 @@ void Porosity()
 		);
 
 	sciantix_variable[sv["Athermal venting factor"]].setFinalValue(ath_venting_factor);
-
 	if (history_variable[hv["Time"]].getFinalValue() == 0)
-		{
-			sciantix_variable[sv["Open porosity"]].setFinalValue(openPorosity(sciantix_variable[sv["Fabrication porosity"]].getFinalValue()));
-		}
+	{
+		// Initial open porosity
+		sciantix_variable[sv["Open porosity"]].setFinalValue(
+			2.8e-02 / (1.0 + exp(-5.0e2 * (sciantix_variable[sv["Fabrication porosity"]].getFinalValue() - 0.055))) 
+			+ 1/20*sciantix_variable[sv["Fabrication porosity"]].getFinalValue());
+	}
+	else
+	{	//  # Backward Euler iteration
+    //   y[i] = y[i-1] + (x[i] - x[i-1]) * f(x[i])
+		// sciantix_variable[sv["Open porosity"]].setFinalValue(
+		// 	sciantix_variable[sv["Open porosity"]].getInitialValue() + 
+		// 	sciantix_variable[sv["Fabrication porosity"]].getIncrement() * (2.8e-02 / (1.0 + exp(-5.0e2 *
+		// 	(sciantix_variable[sv["Fabrication porosity"]].getFinalValue() - 0.055))) 
+		// 	+ 1/20*sciantix_variable[sv["Fabrication porosity"]].getFinalValue()));
 
+		sciantix_variable[sv["Open porosity"]].setFinalValue(openPorosity(sciantix_variable[sv["Fabrication porosity"]].getFinalValue(),
+	 		sciantix_variable[sv["Fabrication porosity"]].getIncrement(), sciantix_variable[sv["Open porosity"]].getInitialValue()));
+	}
 	parameter.push_back(ath_venting_factor);
 
 	model[model_index].setParameter(parameter);
 	model[model_index].setRef("Claisse et al. Journal of Nuclear Materials 466 (2015) 351-356.");
 }
 
-double openPorosity(double fabrication_porosity)
+double openPorosity(double fabrication_porosity, double porosity_increment, double initial_value)
 {
 	/*
 	 *
@@ -106,20 +122,36 @@ double openPorosity(double fabrication_porosity)
 		{
 			if (fabrication_porosity <= 1.0)
 			{
-        double x1_step1[3] = {0.0309254289000001, 50.5545836563236, -1};
-        double b1 = -0.76352583531298012787;
-        double IW1_1 = 2.4890484320254797623;
-        double b2 = 0.030657996141059989936;
-        double LW2_1 = 1.003372825212876851;
-        double y1_step1[3] = {-1, 63.2911366167282, 0.00091428483};
+        // double x1_step1[3] = {0.0309254289000001, 50.5545836563236, -1};
+        // double b1 = -0.76352583531298012787;
+        // double IW1_1 = 2.4890484320254797623;
+        // double b2 = 0.030657996141059989936;
+        // double LW2_1 = 1.003372825212876851;
+        // double y1_step1[3] = {-1, 63.2911366167282, 0.00091428483};
     
 
-        fabrication_porosity = (fabrication_porosity - x1_step1[0]) * x1_step1[1] + x1_step1[2];
-				double n = b1 + IW1_1 * fabrication_porosity;
-				double a1 = 2 / (1 + exp(-2 * n)) - 1;
-				double a2 = b2 + LW2_1 * a1;
-				double p_open = (a2 - y1_step1[0]) / y1_step1[1] + y1_step1[2];
+        // fabrication_porosity = (fabrication_porosity - x1_step1[0]) * x1_step1[1] + x1_step1[2];
+				// double n = b1 + IW1_1 * fabrication_porosity;
+				// double a1 = 2 / (1 + exp(-2 * n)) - 1;
+				// double a2 = b2 + LW2_1 * a1;
+				// double p_open = (a2 - y1_step1[0]) / y1_step1[1] + y1_step1[2];
+				
+				double p_open;
+				
+				double source;
+				double alpha = 1/20;
+				double a = 2.8e-02;
+				double b = 0.055;
+				double c = 5.0e+2;
+				p_open = 2.8e-02/ (1.0 + exp(-5.0e2 * (fabrication_porosity - 0.055))) + 1/20*fabrication_porosity;
+				//source = alpha - a * c * exp(-c * (fabrication_porosity - b)) / pow(1 + exp(-c * (fabrication_porosity - b)), 2); 
+				// source = 0.05;
+				// p_open = sciantix_variable[sv["Open porosity"]].getInitialValue() + source * (sciantix_variable[sv["Fabrication porosity"]].getFinalValue() - sciantix_variable[sv["Fabrication porosity"]].getInitialValue());
+				
 
+				// std::cout << initial_value << std::endl;
+				// std::cout << source << std::endl;
+				// std::cout << sciantix_variable[sv["Open porosity"]].getFinalValue() << std::endl;
 				return(p_open);
 			}
 			else

@@ -851,6 +851,15 @@ void SetVariables(int Sciantix_options[], double Sciantix_history[], double Scia
 	++sv_counter;
 	
 	sciantix_variable.emplace_back();
+	sciantix_variable[sv_counter].setName("Residual porosity");
+	sciantix_variable[sv_counter].setUOM("(/)");
+	sciantix_variable[sv_counter].setInitialValue(Sciantix_variables[70]);
+	sciantix_variable[sv_counter].setFinalValue(Sciantix_variables[70]);
+	sciantix_variable[sv_counter].setOutput(1);
+	++sv_counter;
+	
+	
+	sciantix_variable.emplace_back();
 	sciantix_variable[sv_counter].setName("U234");
 	sciantix_variable[sv_counter].setUOM("(at/m3)");
 	sciantix_variable[sv_counter].setInitialValue(Sciantix_variables[41]);

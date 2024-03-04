@@ -40,10 +40,10 @@ void Sciantix(int Sciantix_options[],
 
 	//std::cout << "HBD Alessio Magni" << std::endl;
 
+	Porosity();																		  MapModel();
+
 	Densification();																MapModel();
 	sciantix_simulation.Densification();
-
-	Porosity();																		  MapModel();
 		
 	GrainGrowth();                                 	MapModel();
 	sciantix_simulation.GrainGrowth();

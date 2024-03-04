@@ -21,7 +21,8 @@
 #include "MatrixDeclaration.h"
 #include "MapMatrix.h"
 #include "SolverDeclaration.h"
+#include "Solver.h"
 
 void Porosity();
-double openPorosity(double fabrication_porosity);
+double openPorosity(double fabrication_porosity, double porosity_increment, double initial_value);
 double athermalVentingFactor(double open_p, double theta, double p, double l, double bu, double T, double F);

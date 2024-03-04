@@ -17,6 +17,8 @@
 #include "MainVariables.h"
 
 clock_t timer, timer_time_step;
+bool firstSat = true;
+const int Nstep = 1000;
 
 int    Sciantix_options[40];
 double Sciantix_history[9];
@@ -27,7 +29,7 @@ double Sciantix_diffusion_modes[1000];
 long long int Time_step_number(0);
 double  Time_h(0.0), dTime_h(0.0), Time_end_h(0.0); // (h)
 double  Time_s(0.0), Time_end_s(0.0); // (s)
-double  Number_of_time_steps_per_interval(500);
+double  Number_of_time_steps_per_interval(Nstep);
 
 std::ofstream Output_file;
 std::ofstream Execution_file;
